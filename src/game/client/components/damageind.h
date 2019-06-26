@@ -20,9 +20,6 @@ class CDamageInd : public CComponent
 		MAX_ITEMS=64,
 	};
 
-	CItem m_aItems[MAX_ITEMS];
-	int m_NumItems;
-
 	CItem *CreateI();
 	void DestroyI(CItem *i);
 
