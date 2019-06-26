@@ -54,7 +54,6 @@ class CChat : public CComponent
 	bool m_Show;
 	bool m_InputUpdate;
 	int m_ChatStringOffset;
-	int m_OldChatStringLength;
 	int m_CompletionChosen;
 	int m_CompletionFav;
 	char m_aCompletionBuffer[256];
@@ -108,7 +107,6 @@ class CChat : public CComponent
 	CChatCommands *m_pCommands;
 	bool m_IgnoreCommand;
 	bool IsTypingCommand() const;
-	void HandleCommands(float x, float y, float w);
 	bool ExecuteCommand();
 	int IdentifyNameParameter(const char* pCommand) const;
 
