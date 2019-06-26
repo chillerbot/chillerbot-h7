@@ -6,7 +6,6 @@
 
 class CHud : public CComponent
 {
-	float m_Width, m_Height;
 	float m_AverageFPS;
 	int64 m_WarmupHideTick;
 
