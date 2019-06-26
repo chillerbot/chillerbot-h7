@@ -34,7 +34,6 @@ private:
 		CODE_RANGE=CODE_UB-CODE_LB+1,
 	};
 	sorted_array<CCountryFlag> m_aCountryFlags;
-	int m_CodeIndexLUT[CODE_RANGE];
 
 	void LoadCountryflagsIndexfile();
 };
