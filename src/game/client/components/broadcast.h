@@ -6,10 +6,6 @@
 
 class CBroadcast : public CComponent
 {
-	char m_aBroadcastText[128];
-	float m_BroadcastTime;
-	float m_BroadcastRenderOffset;
-
 	// server broadcast
 	typedef unsigned char u8;
 	struct CBcColor
@@ -32,15 +28,9 @@ class CBroadcast : public CComponent
 	};
 
 	CBcColor m_aSrvBroadcastColorList[MAX_BROADCAST_COLORS];
-	CBcLineInfo m_aSrvBroadcastLines[MAX_BROADCAST_LINES];
 	char m_aSrvBroadcastMsg[MAX_BROADCAST_MSG_LENGTH+1];
 	int m_aSrvBroadcastMsgLen;
 	int m_SrvBroadcastColorCount;
-	int m_SrvBroadcastLineCount;
-	float m_SrvBroadcastReceivedTime;
-	float m_SrvBroadcastFontSize;
-
-	void RenderServerBroadcast();
 
 public:
 	CBroadcast();
