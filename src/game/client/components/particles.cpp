@@ -1,11 +1,9 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include <base/math.h>
-#include <engine/graphics.h>
 #include <engine/demo.h>
 
 #include <generated/client_data.h>
-#include <game/client/render.h>
 
 #include "particles.h"
 
@@ -157,32 +155,5 @@ void CParticles::OnRender()
 
 void CParticles::RenderGroup(int Group)
 {
-	Graphics()->BlendNormal();
-	//gfx_blend_additive();
-	Graphics()->TextureSet(g_pData->m_aImages[IMAGE_PARTICLES].m_Id);
-	Graphics()->QuadsBegin();
 
-	int i = m_aFirstPart[Group];
-	while(i != -1)
-	{
-		RenderTools()->SelectSprite(m_aParticles[i].m_Spr);
-		float a = m_aParticles[i].m_Life / m_aParticles[i].m_LifeSpan;
-		vec2 p = m_aParticles[i].m_Pos;
-		float Size = mix(m_aParticles[i].m_StartSize, m_aParticles[i].m_EndSize, a);
-
-		Graphics()->QuadsSetRotation(m_aParticles[i].m_Rot);
-
-		Graphics()->SetColor(
-			m_aParticles[i].m_Color.r,
-			m_aParticles[i].m_Color.g,
-			m_aParticles[i].m_Color.b,
-			m_aParticles[i].m_Color.a); // pow(a, 0.75f) *
-
-		IGraphics::CQuadItem QuadItem(p.x, p.y, Size, Size);
-		Graphics()->QuadsDraw(&QuadItem, 1);
-
-		i = m_aParticles[i].m_NextPart;
-	}
-	Graphics()->QuadsEnd();
-	Graphics()->BlendNormal();
 }
