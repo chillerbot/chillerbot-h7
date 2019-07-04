@@ -1511,71 +1511,7 @@ void CGameClient::CClientData::UpdateBotRenderInfo(CGameClient *pGameClient, int
 
 void CGameClient::CClientData::UpdateRenderInfo(CGameClient *pGameClient, int ClientID, bool UpdateSkinInfo)
 {
-	// update skin info
-	if(UpdateSkinInfo)
-	{
-		m_SkinInfo.m_Size = 64;
-		if(pGameClient->IsXmas())
-		{
-			m_SkinInfo.m_HatTexture = pGameClient->m_pSkins->m_XmasHatTexture;
-			m_SkinInfo.m_HatSpriteIndex = ClientID % CSkins::HAT_NUM;
-		}
-		else
-			m_SkinInfo.m_HatTexture.Invalidate();
 
-		for(int p = 0; p < NUM_SKINPARTS; p++)
-		{
-			int ID = pGameClient->m_pSkins->FindSkinPart(p, m_aaSkinPartNames[p], false);
-			if(ID < 0)
-			{
-				if(p == SKINPART_MARKING || p == SKINPART_DECORATION)
-					ID = pGameClient->m_pSkins->FindSkinPart(p, "", false);
-				else
-					ID = pGameClient->m_pSkins->FindSkinPart(p, "standard", false);
-
-				if(ID < 0)
-					m_SkinPartIDs[p] = 0;
-				else
-					m_SkinPartIDs[p] = ID;
-			}
-			else
-			{
-				if(m_SkinInfo.m_HatTexture.IsValid())
-				{
-					if(p == SKINPART_BODY && str_comp(m_aaSkinPartNames[p], "standard"))
-						m_SkinInfo.m_HatSpriteIndex = CSkins::HAT_OFFSET_SIDE + (ClientID%CSkins::HAT_NUM);
-					if(p == SKINPART_DECORATION && !str_comp(m_aaSkinPartNames[p], "twinbopp"))
-						m_SkinInfo.m_HatSpriteIndex = CSkins::HAT_OFFSET_SIDE + (ClientID%CSkins::HAT_NUM);
-				}
-				m_SkinPartIDs[p] = ID;
-			}
-
-			const CSkins::CSkinPart *pSkinPart = pGameClient->m_pSkins->GetSkinPart(p, m_SkinPartIDs[p]);
-			if(m_aUseCustomColors[p])
-			{
-				m_SkinInfo.m_aTextures[p] = pSkinPart->m_ColorTexture;
-				m_SkinInfo.m_aColors[p] = pGameClient->m_pSkins->GetColorV4(m_aSkinPartColors[p], p==SKINPART_MARKING);
-			}
-			else
-			{
-				m_SkinInfo.m_aTextures[p] = pSkinPart->m_OrgTexture;
-				m_SkinInfo.m_aColors[p] = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-			}
-		}
-	}
-
-	m_RenderInfo = m_SkinInfo;
-
-	// force team colors
-	if(pGameClient->m_GameInfo.m_GameFlags&GAMEFLAG_TEAMS)
-	{
-		for(int p = 0; p < NUM_SKINPARTS; p++)
-		{
-			m_RenderInfo.m_aTextures[p] = pGameClient->m_pSkins->GetSkinPart(p, m_SkinPartIDs[p])->m_ColorTexture;
-			int ColorVal = pGameClient->m_pSkins->GetTeamColor(m_aUseCustomColors[p], m_aSkinPartColors[p], m_Team, p);
-			m_RenderInfo.m_aColors[p] = pGameClient->m_pSkins->GetColorV4(ColorVal, p==SKINPART_MARKING);
-		}
-	}
 }
 
 void CGameClient::CClientData::Reset(CGameClient *pGameClient, int ClientID)
@@ -1590,12 +1526,6 @@ void CGameClient::CClientData::Reset(CGameClient *pGameClient, int ClientID)
 	m_Active = false;
 	m_ChatIgnore = false;
 	m_Friend = false;
-	for(int p = 0; p < NUM_SKINPARTS; p++)
-	{
-		m_SkinPartIDs[p] = 0;
-		m_SkinInfo.m_aTextures[p] = pGameClient->m_pSkins->GetSkinPart(p, 0)->m_ColorTexture;
-		m_SkinInfo.m_aColors[p] = vec4(1.0f, 1.0f, 1.0f , 1.0f);
-	}
 	UpdateRenderInfo(pGameClient, ClientID, false);
 }
 
