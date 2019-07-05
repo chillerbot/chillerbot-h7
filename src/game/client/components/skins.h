@@ -73,10 +73,8 @@ public:
 	int GetTeamColor(int UseCustomColors, int PartColor, int Team, int Part) const;
 
 private:
-	int m_ScanningPart;
 	sorted_array<CSkinPart> m_aaSkinParts[NUM_SKINPARTS];
 	sorted_array<CSkin> m_aSkins;
-	CSkin m_DummySkin;
 
 	static int SkinPartScan(const char *pName, int IsDir, int DirType, void *pUser);
 	static int SkinScan(const char *pName, int IsDir, int DirType, void *pUser);

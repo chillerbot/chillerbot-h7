@@ -79,13 +79,6 @@ void CMapLayers::OnInit()
 
 		LoadBackgroundMap();
 	}
-
-	m_pEggTiles = 0;
-}
-
-static void PlaceEggDoodads(int LayerWidth, int LayerHeight, CTile* aOutTiles, CTile* aGameLayerTiles, int ItemWidth, int ItemHeight, const int* aImageTileID, int ImageTileIDCount, int Freq)
-{
-
 }
 
 void CMapLayers::OnMapLoad()
@@ -96,11 +89,7 @@ void CMapLayers::OnMapLoad()
 
 void CMapLayers::OnShutdown()
 {
-	if(m_pEggTiles)
-	{
-		mem_free(m_pEggTiles);
-		m_pEggTiles = 0;
-	}
+
 }
 
 void CMapLayers::LoadEnvPoints(const CLayers *pLayers, array<CEnvPoint>& lEnvPoints)
