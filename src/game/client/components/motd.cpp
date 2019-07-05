@@ -1,8 +1,6 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include <engine/shared/config.h>
-#include <engine/graphics.h>
-#include <engine/textrender.h>
 #include <engine/keys.h>
 
 #include <generated/protocol.h>
@@ -33,24 +31,7 @@ void CMotd::OnStateChange(int NewState, int OldState)
 
 void CMotd::OnRender()
 {
-	if(!IsActive())
-		return;
 
-	float Width = 400*3.0f*Graphics()->ScreenAspect();
-	float Height = 400*3.0f;
-
-	Graphics()->MapScreen(0, 0, Width, Height);
-
-	float h = 800.0f;
-	float w = 650.0f;
-	float x = Width/2 - w/2;
-	float y = 150.0f;
-	CUIRect Rect = {x, y, w, h};
-
-	Graphics()->BlendNormal();
-	RenderTools()->DrawRoundRect(&Rect, vec4(0.0f, 0.0f, 0.0f, 0.5f), 40.0f);
-
-	TextRender()->Text(0, x+40.0f, y+40.0f, 32.0f, m_aServerMotd, w-80.0f);
 }
 
 void CMotd::OnMessage(int MsgType, void *pRawMsg)
@@ -81,6 +62,7 @@ void CMotd::OnMessage(int MsgType, void *pRawMsg)
 			m_ServerMotdTime = time_get()+time_freq()*g_Config.m_ClMotdTime;
 		else
 			m_ServerMotdTime = 0;
+		dbg_msg("motd", "%s", m_aServerMotd);
 	}
 }
 
