@@ -4,6 +4,7 @@
 #include <engine/engine.h>
 #include <engine/keys.h>
 #include <engine/shared/config.h>
+#include <engine/friends.h>
 
 #include <generated/protocol.h>
 #include <generated/client_data.h>
@@ -14,7 +15,6 @@
 #include <game/client/components/scoreboard.h>
 #include <game/client/components/sounds.h>
 
-#include "menus.h"
 #include "chat.h"
 #include "binds.h"
 
