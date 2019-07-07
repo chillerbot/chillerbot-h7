@@ -618,7 +618,7 @@ private:
 	void RenderBackButton(CUIRect MainView);
 
 	// found in menus_demo.cpp
-	void RenderDemoPlayer(CUIRect MainView);
+	void RenderDemoPlayer();
 	void RenderDemoList(CUIRect MainView);
 	static float RenderDemoDetails(CUIRect View, void *pUser);
 
@@ -627,8 +627,8 @@ private:
 	void RenderLogo(CUIRect MainView);
 
 	// found in menus_ingame.cpp
-	void RenderGame(CUIRect MainView);
-	void RenderPlayers(CUIRect MainView);
+	void RenderGame();
+	void RenderPlayers();
 	void RenderServerInfo(CUIRect MainView);
 	void HandleCallvote(int Page, bool Force);
 	void RenderServerControl(CUIRect MainView);

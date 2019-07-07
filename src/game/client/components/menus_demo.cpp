@@ -20,57 +20,18 @@
 #include "maplayers.h"
 #include "menus.h"
 
-void CMenus::RenderDemoPlayer(CUIRect MainView)
+void CMenus::RenderDemoPlayer()
 {
 	const IDemoPlayer::CInfo *pInfo = DemoPlayer()->BaseInfo();
-
-	const float SeekBarHeight = 15.0f;
-	const float ButtonbarHeight = 20.0f;
-	const float NameBarHeight = 20.0f;
-	const float Margins = 5.0f;
-	float TotalHeight;
-
-	if(m_MenuActive)
-		TotalHeight = SeekBarHeight+ButtonbarHeight+NameBarHeight+Margins*3;
-	else
-		TotalHeight = SeekBarHeight+Margins*2;
-
-	MainView.HSplitBottom(TotalHeight, 0, &MainView);
-	MainView.VSplitLeft(50.0f, 0, &MainView);
-	MainView.VSplitRight(450.0f, &MainView, 0);
-
-	if (m_SeekBarActive || m_MenuActive) // only draw the background if SeekBar or Menu is active
-		RenderTools()->DrawUIRect(&MainView, vec4(0.0f, 0.0f, 0.0f, g_Config.m_ClMenuAlpha/100.0f), CUI::CORNER_T, 10.0f);
-
-	MainView.Margin(5.0f, &MainView);
-
-	CUIRect SeekBar, ButtonBar, NameBar;
 
 	int CurrentTick = pInfo->m_CurrentTick - pInfo->m_FirstTick;
 	int TotalTicks = pInfo->m_LastTick - pInfo->m_FirstTick;
 
-	if(m_SeekBarActivatedTime < time_get() - 5*time_freq())
-		m_SeekBarActive = false;
-
-	if(m_MenuActive)
-	{
-		MainView.HSplitTop(SeekBarHeight, &SeekBar, &ButtonBar);
-		ButtonBar.HSplitTop(Margins, 0, &ButtonBar);
-		ButtonBar.HSplitBottom(NameBarHeight, &ButtonBar, &NameBar);
-		NameBar.HSplitTop(4.0f, 0, &NameBar);
-		m_SeekBarActive = true;
-		m_SeekBarActivatedTime = time_get();
-	}
-	else
-		SeekBar = MainView;
-
 	// do seekbar
 	if(m_SeekBarActive || m_MenuActive)
 	{
-		static int s_SeekBarID = 0;
-		void *id = &s_SeekBarID;
 		char aBuffer[128];
-		const float Rounding = 5.0f;
+		// const float Rounding = 5.0f;
 
 		// draw markers
 		for(int i = 0; i < pInfo->m_NumTimelineMarkers; i++)
@@ -84,38 +45,6 @@ void CMenus::RenderDemoPlayer(CUIRect MainView)
 			CurrentTick/SERVER_TICK_SPEED/60, (CurrentTick/SERVER_TICK_SPEED)%60,
 			TotalTicks/SERVER_TICK_SPEED/60, (TotalTicks/SERVER_TICK_SPEED)%60);
 		dbg_msg("demo", "time: %s", aBuffer);
-
-		// do the logic
-		int Inside = UI()->MouseInside(&SeekBar);
-
-		if(UI()->CheckActiveItem(id))
-		{
-			if(!UI()->MouseButton(0))
-				UI()->SetActiveItem(0);
-			else
-			{
-				static float PrevAmount = 0.0f;
-				float Amount = (UI()->MouseX()-SeekBar.x)/(float)SeekBar.w;
-				if(Amount > 0.0f && Amount < 1.0f && absolute(PrevAmount-Amount) >= (1.0f/UI()->Screen()->w))
-				{
-					PrevAmount = Amount;
-					m_pClient->OnReset();
-					m_pClient->m_SuppressEvents = true;
-					DemoPlayer()->SetPos(Amount);
-					m_pClient->m_SuppressEvents = false;
-					m_pClient->m_pMapLayersBackGround->EnvelopeUpdate();
-					m_pClient->m_pMapLayersForeGround->EnvelopeUpdate();
-				}
-			}
-		}
-		else if(UI()->HotItem() == id)
-		{
-			if(UI()->MouseButton(0))
-				UI()->SetActiveItem(id);
-		}
-
-		if(Inside)
-			UI()->SetHotItem(id);
 	}
 
 	if(CurrentTick == TotalTicks)

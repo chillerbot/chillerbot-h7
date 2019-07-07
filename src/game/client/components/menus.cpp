@@ -1809,9 +1809,9 @@ int CMenus::Render()
 			if(Client()->State() != IClient::STATE_OFFLINE)
 			{
 				if(m_GamePage == PAGE_GAME)
-					RenderGame(MainView);
+					RenderGame();
 				else if(m_GamePage == PAGE_PLAYERS)
-					RenderPlayers(MainView);
+					RenderPlayers();
 				else if(m_GamePage == PAGE_SERVER_INFO)
 					RenderServerInfo(MainView);
 				else if(m_GamePage == PAGE_CALLVOTE)
@@ -2630,9 +2630,7 @@ void CMenus::OnRender()
 
 	if(Client()->State() == IClient::STATE_DEMOPLAYBACK)
 	{
-		CUIRect Screen = *UI()->Screen();
-		Graphics()->MapScreen(Screen.x, Screen.y, Screen.w, Screen.h);
-		RenderDemoPlayer(Screen);
+		RenderDemoPlayer();
 	}
 
 	if(Client()->State() == IClient::STATE_ONLINE && m_pClient->m_ServerMode == m_pClient->SERVERMODE_PUREMOD)
