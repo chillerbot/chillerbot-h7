@@ -20,16 +20,6 @@
 #include "maplayers.h"
 #include "menus.h"
 
-int CMenus::DoButton_DemoPlayer(CButtonContainer *pBC, const char *pText, const CUIRect *pRect)
-{
-	float Seconds = 0.6f; //  0.6 seconds for fade
-	float Fade = ButtonFade(pBC, Seconds);
-
-	RenderTools()->DrawUIRect(pRect, vec4(1,1,1, 0.5f+(Fade/Seconds)*0.25f), CUI::CORNER_ALL, 5.0f);
-	UI()->DoLabel(pRect, pText, 14.0f, CUI::ALIGN_CENTER);
-	return UI()->DoButtonLogic(pBC->GetID(), pText, false, pRect);
-}
-
 void CMenus::RenderDemoPlayer(CUIRect MainView)
 {
 	const IDemoPlayer::CInfo *pInfo = DemoPlayer()->BaseInfo();
@@ -59,18 +49,6 @@ void CMenus::RenderDemoPlayer(CUIRect MainView)
 	int CurrentTick = pInfo->m_CurrentTick - pInfo->m_FirstTick;
 	int TotalTicks = pInfo->m_LastTick - pInfo->m_FirstTick;
 
-	// we can toggle the seekbar using CTRL
-	if(!m_MenuActive && (Input()->KeyPress(KEY_LCTRL) || Input()->KeyPress(KEY_RCTRL)))
-	{
-		if (m_SeekBarActive)
-			m_SeekBarActive = false;
-		else
-		{
-			m_SeekBarActive = true;
-			m_SeekBarActivatedTime = time_get(); // stores at which point of time the seekbar was activated, so we can automatically hide it after few seconds
-		}
-	}
-
 	if(m_SeekBarActivatedTime < time_get() - 5*time_freq())
 		m_SeekBarActive = false;
 
@@ -94,32 +72,18 @@ void CMenus::RenderDemoPlayer(CUIRect MainView)
 		char aBuffer[128];
 		const float Rounding = 5.0f;
 
-		// draw seek bar
-		RenderTools()->DrawUIRect(&SeekBar, vec4(0,0,0,0.5f), CUI::CORNER_ALL, Rounding);
-
-		// draw filled bar
-		float Amount = CurrentTick/(float)TotalTicks;
-		CUIRect FilledBar = SeekBar;
-		FilledBar.w = max(2*Rounding, FilledBar.w*Amount);
-		RenderTools()->DrawUIRect(&FilledBar, vec4(1,1,1,0.5f), CUI::CORNER_ALL, Rounding);
-
 		// draw markers
 		for(int i = 0; i < pInfo->m_NumTimelineMarkers; i++)
 		{
-			float Ratio = (pInfo->m_aTimelineMarkers[i]-pInfo->m_FirstTick) / (float)TotalTicks;
-			Graphics()->TextureClear();
-			Graphics()->QuadsBegin();
-			Graphics()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-			IGraphics::CQuadItem QuadItem(SeekBar.x + (SeekBar.w-2*Rounding)*Ratio, SeekBar.y, UI()->PixelSize(), SeekBar.h);
-			Graphics()->QuadsDrawTL(&QuadItem, 1);
-			Graphics()->QuadsEnd();
+			// float Ratio = (pInfo->m_aTimelineMarkers[i]-pInfo->m_FirstTick) / (float)TotalTicks;
+			// SeekBar.x + (SeekBar.w-2*Rounding)*Ratio, SeekBar.y, UI()->PixelSize(), SeekBar.h);
 		}
 
 		// draw time
 		str_format(aBuffer, sizeof(aBuffer), "%d:%02d / %d:%02d",
 			CurrentTick/SERVER_TICK_SPEED/60, (CurrentTick/SERVER_TICK_SPEED)%60,
 			TotalTicks/SERVER_TICK_SPEED/60, (TotalTicks/SERVER_TICK_SPEED)%60);
-		UI()->DoLabel(&SeekBar, aBuffer, SeekBar.h*0.70f, CUI::ALIGN_CENTER);
+		dbg_msg("demo", "time: %s", aBuffer);
 
 		// do the logic
 		int Inside = UI()->MouseInside(&SeekBar);
@@ -161,75 +125,27 @@ void CMenus::RenderDemoPlayer(CUIRect MainView)
 		DemoPlayer()->SetPos(0);
 	}
 
-	bool IncreaseDemoSpeed = false, DecreaseDemoSpeed = false;
-
-	//add spacebar for toggling Play/Pause
-	if(Input()->KeyPress(KEY_SPACE))
-	{
-		if(!pInfo->m_Paused)
-			DemoPlayer()->Pause();
-		else
-			DemoPlayer()->Unpause();
-	}
-
 	if(m_MenuActive)
 	{
-		// do buttons
-		CUIRect Button;
-
-		// combined play and pause button
-		ButtonBar.VSplitLeft(ButtonbarHeight, &Button, &ButtonBar);
-		static CButtonContainer s_PlayPauseButton;
 		if(!pInfo->m_Paused)
 		{
-			if(DoButton_SpriteID(&s_PlayPauseButton, IMAGE_DEMOBUTTONS, SPRITE_DEMOBUTTON_PAUSE, false, &Button, CUI::CORNER_ALL))
+			if(!"SPRITE_DEMOBUTTON_PAUSE")
 				DemoPlayer()->Pause();
 		}
 		else
 		{
-			if(DoButton_SpriteID(&s_PlayPauseButton, IMAGE_DEMOBUTTONS, SPRITE_DEMOBUTTON_PLAY, false, &Button, CUI::CORNER_ALL))
+			if(!"SPRITE_DEMOBUTTON_PLAY")
 				DemoPlayer()->Unpause();
 		}
 
-		// stop button
-
-		ButtonBar.VSplitLeft(Margins, 0, &ButtonBar);
-		ButtonBar.VSplitLeft(ButtonbarHeight, &Button, &ButtonBar);
-		static CButtonContainer s_ResetButton;
-		if(DoButton_SpriteID(&s_ResetButton, IMAGE_DEMOBUTTONS, SPRITE_DEMOBUTTON_STOP, false, &Button, CUI::CORNER_ALL))
+		if(!"stopbutton")
 		{
 			m_pClient->OnReset();
 			DemoPlayer()->Pause();
 			DemoPlayer()->SetPos(0);
 		}
 
-		// slowdown
-		ButtonBar.VSplitLeft(Margins, 0, &ButtonBar);
-		ButtonBar.VSplitLeft(ButtonbarHeight, &Button, &ButtonBar);
-		static CButtonContainer s_SlowDownButton;
-		if(DoButton_SpriteID(&s_SlowDownButton, IMAGE_DEMOBUTTONS, SPRITE_DEMOBUTTON_SLOWER, false, &Button, CUI::CORNER_ALL))
-			DecreaseDemoSpeed = true;
-
-		// fastforward
-		ButtonBar.VSplitLeft(Margins, 0, &ButtonBar);
-		ButtonBar.VSplitLeft(ButtonbarHeight, &Button, &ButtonBar);
-		static CButtonContainer s_FastForwardButton;
-		if(DoButton_SpriteID(&s_FastForwardButton, IMAGE_DEMOBUTTONS, SPRITE_DEMOBUTTON_FASTER, false, &Button, CUI::CORNER_ALL))
-			IncreaseDemoSpeed = true;
-
-		// speed meter
-		ButtonBar.VSplitLeft(Margins*3, 0, &ButtonBar);
-		char aBuffer[64];
-		if(pInfo->m_Speed >= 1.0f)
-			str_format(aBuffer, sizeof(aBuffer), "x%.0f", pInfo->m_Speed);
-		else
-			str_format(aBuffer, sizeof(aBuffer), "x%.2f", pInfo->m_Speed);
-		UI()->DoLabel(&ButtonBar, aBuffer, Button.h*0.7f, CUI::ALIGN_LEFT);
-
-		// close button
-		ButtonBar.VSplitRight(ButtonbarHeight*3, &ButtonBar, &Button);
-		static CButtonContainer s_ExitButton;
-		if(DoButton_DemoPlayer(&s_ExitButton, Localize("Close"), &Button))
+		if(!"closebutton")
 			Client()->Disconnect();
 
 		// demo name
@@ -237,33 +153,7 @@ void CMenus::RenderDemoPlayer(CUIRect MainView)
 		DemoPlayer()->GetDemoName(aDemoName, sizeof(aDemoName));
 		char aBuf[128];
 		str_format(aBuf, sizeof(aBuf), Localize("Demofile: %s"), aDemoName);
-		CTextCursor Cursor;
-		TextRender()->SetCursor(&Cursor, NameBar.x, NameBar.y, Button.h*0.5f, TEXTFLAG_RENDER|TEXTFLAG_STOP_AT_END);
-		Cursor.m_LineWidth = MainView.w;
-		TextRender()->TextEx(&Cursor, aBuf, -1);
-	}
-
-	if(IncreaseDemoSpeed || Input()->KeyPress(KEY_MOUSE_WHEEL_UP) || Input()->KeyPress(KEY_PLUS) || Input()->KeyPress(KEY_KP_PLUS))
-	{
-		if(pInfo->m_Speed < 0.1f) DemoPlayer()->SetSpeed(0.1f);
-		else if(pInfo->m_Speed < 0.25f) DemoPlayer()->SetSpeed(0.25f);
-		else if(pInfo->m_Speed < 0.5f) DemoPlayer()->SetSpeed(0.5f);
-		else if(pInfo->m_Speed < 0.75f) DemoPlayer()->SetSpeed(0.75f);
-		else if(pInfo->m_Speed < 1.0f) DemoPlayer()->SetSpeed(1.0f);
-		else if(pInfo->m_Speed < 2.0f) DemoPlayer()->SetSpeed(2.0f);
-		else if(pInfo->m_Speed < 4.0f) DemoPlayer()->SetSpeed(4.0f);
-		else DemoPlayer()->SetSpeed(8.0f);
-	}
-	else if(DecreaseDemoSpeed || Input()->KeyPress(KEY_MOUSE_WHEEL_DOWN) || Input()->KeyPress(KEY_MINUS) || Input()->KeyPress(KEY_KP_MINUS))
-	{
-		if(pInfo->m_Speed > 4.0f) DemoPlayer()->SetSpeed(4.0f);
-		else if(pInfo->m_Speed > 2.0f) DemoPlayer()->SetSpeed(2.0f);
-		else if(pInfo->m_Speed > 1.0f) DemoPlayer()->SetSpeed(1.0f);
-		else if(pInfo->m_Speed > 0.75f) DemoPlayer()->SetSpeed(0.75f);
-		else if(pInfo->m_Speed > 0.5f) DemoPlayer()->SetSpeed(0.5f);
-		else if(pInfo->m_Speed > 0.25f) DemoPlayer()->SetSpeed(0.25f);
-		else if(pInfo->m_Speed > 0.1f) DemoPlayer()->SetSpeed(0.1f);
-		else DemoPlayer()->SetSpeed(0.05f);
+		dbg_msg("demo", "%s", aBuf);
 	}
 }
 
@@ -325,9 +215,6 @@ void CMenus::RenderDemoList(CUIRect MainView)
 {
 	CUIRect BottomView;
 	MainView.HSplitTop(20.0f, 0, &MainView);
-
-	// back button
-	RenderBackButton(MainView);
 
 	// cut view
 	MainView.HSplitBottom(80.0f, &MainView, &BottomView);
@@ -512,7 +399,7 @@ void CMenus::RenderDemoList(CUIRect MainView)
 				str_format(aBuf, sizeof(aBuf), "%s/%s", m_aCurrentDemoFolder, m_lDemos[m_DemolistSelectedIndex].m_aFilename);
 				const char *pError = Client()->DemoPlayer_Play(aBuf, m_lDemos[m_DemolistSelectedIndex].m_StorageType);
 				if(pError)
-					PopupMessage(Localize("Error loading demo"), pError, Localize("Ok"));
+					dbg_msg("demo", "%s", Localize("Error loading demo"));
 				else
 				{
 					UI()->SetActiveItem(0);
@@ -530,64 +417,25 @@ float CMenus::RenderDemoDetails(CUIRect View, void *pUser)
 	// render demo info
 	if(!pSelf->m_DemolistSelectedIsDir && pSelf->m_DemolistSelectedIndex >= 0 && pSelf->m_lDemos[pSelf->m_DemolistSelectedIndex].m_Valid)
 	{
-		CUIRect Button;
-		
-		const float ButtonHeight = 20.0f;
-		const float Spacing = 2.0f;
-		
-		View.HSplitTop(Spacing, 0, &View);
-		View.HSplitTop(ButtonHeight, &Button, &View);
-		pSelf->DoInfoBox(&Button, Localize("Created"), pSelf->m_lDemos[pSelf->m_DemolistSelectedIndex].m_Info.m_aTimestamp);
-
-		View.HSplitTop(Spacing, 0, &View);
-		View.HSplitTop(ButtonHeight, &Button, &View);
-		pSelf->DoInfoBox(&Button, Localize("Type"), pSelf->m_lDemos[pSelf->m_DemolistSelectedIndex].m_Info.m_aType);
-
-		View.HSplitTop(Spacing, 0, &View);
-		View.HSplitTop(ButtonHeight, &Button, &View);
+		char aBuf[64];
 		int Length = ((pSelf->m_lDemos[pSelf->m_DemolistSelectedIndex].m_Info.m_aLength[0]<<24)&0xFF000000) | ((pSelf->m_lDemos[pSelf->m_DemolistSelectedIndex].m_Info.m_aLength[1]<<16)&0xFF0000) |
 					((pSelf->m_lDemos[pSelf->m_DemolistSelectedIndex].m_Info.m_aLength[2]<<8)&0xFF00) | (pSelf->m_lDemos[pSelf->m_DemolistSelectedIndex].m_Info.m_aLength[3]&0xFF);
-		char aBuf[64];
-		str_format(aBuf, sizeof(aBuf), "%d:%02d", Length/60, Length%60);
-		pSelf->DoInfoBox(&Button, Localize("Length"), aBuf);
-
-		View.HSplitTop(Spacing, 0, &View);
-		View.HSplitTop(ButtonHeight, &Button, &View);
-		str_format(aBuf, sizeof(aBuf), "%d", pSelf->m_lDemos[pSelf->m_DemolistSelectedIndex].m_Info.m_Version);
-		pSelf->DoInfoBox(&Button, Localize("Version"), aBuf);
-
-		View.HSplitTop(Spacing, 0, &View);
-		View.HSplitTop(ButtonHeight, &Button, &View);
-		pSelf->DoInfoBox(&Button, Localize("Netversion"), pSelf->m_lDemos[pSelf->m_DemolistSelectedIndex].m_Info.m_aNetversion);
-
-		View.HSplitTop(Spacing, 0, &View);
-		View.HSplitTop(ButtonHeight, &Button, &View);
-		const int MarkerCount = DemoGetMarkerCount(pSelf->m_lDemos[pSelf->m_DemolistSelectedIndex].m_Info);
-		str_format(aBuf, sizeof(aBuf), "%d", MarkerCount);
-		if(MarkerCount > 0)
-			pSelf->TextRender()->TextColor(0.5, 1, 0.5, 1);
-		pSelf->DoInfoBox(&Button, Localize("Markers"), aBuf);
-		pSelf->TextRender()->TextColor(1, 1, 1, 1);
-
-		View.HSplitTop(Spacing, 0, &View);
-		View.HSplitTop(ButtonHeight, &Button, &View);
-		pSelf->DoInfoBox(&Button, Localize("Map"), pSelf->m_lDemos[pSelf->m_DemolistSelectedIndex].m_Info.m_aMapName);
-
-		View.HSplitTop(Spacing, 0, &View);
-		View.HSplitTop(ButtonHeight, &Button, &View);
-		Button.VMargin(ButtonHeight, &Button);
-
-		CUIRect ButtonRight;
-		Button.VSplitMid(&Button, &ButtonRight);
 		float Size = float((pSelf->m_lDemos[pSelf->m_DemolistSelectedIndex].m_Info.m_aMapSize[0]<<24) | (pSelf->m_lDemos[pSelf->m_DemolistSelectedIndex].m_Info.m_aMapSize[1]<<16) |
 							(pSelf->m_lDemos[pSelf->m_DemolistSelectedIndex].m_Info.m_aMapSize[2]<<8) | (pSelf->m_lDemos[pSelf->m_DemolistSelectedIndex].m_Info.m_aMapSize[3]))/1024.0f;
-		str_format(aBuf, sizeof(aBuf), Localize("%.3f KiB"), Size);
-		pSelf->DoInfoBox(&Button, Localize("Size"), aBuf);
-
 		unsigned Crc = (pSelf->m_lDemos[pSelf->m_DemolistSelectedIndex].m_Info.m_aMapCrc[0]<<24) | (pSelf->m_lDemos[pSelf->m_DemolistSelectedIndex].m_Info.m_aMapCrc[1]<<16) |
 					(pSelf->m_lDemos[pSelf->m_DemolistSelectedIndex].m_Info.m_aMapCrc[2]<<8) | (pSelf->m_lDemos[pSelf->m_DemolistSelectedIndex].m_Info.m_aMapCrc[3]);
+		dbg_msg("demo", "======== INFO ========");
+		dbg_msg("demo", "%s: %s", Localize("Created"), pSelf->m_lDemos[pSelf->m_DemolistSelectedIndex].m_Info.m_aTimestamp);
+		dbg_msg("demo", "%s: %s", Localize("Type"), pSelf->m_lDemos[pSelf->m_DemolistSelectedIndex].m_Info.m_aType);
+		dbg_msg("demo", "%s: %d", Localize("Length"), Length);
+		dbg_msg("demo", "%s: %d", Localize("Version"), pSelf->m_lDemos[pSelf->m_DemolistSelectedIndex].m_Info.m_Version);
+		dbg_msg("demo", "%s: %s", Localize("Netversion"), pSelf->m_lDemos[pSelf->m_DemolistSelectedIndex].m_Info.m_aNetversion);
+		dbg_msg("demo", "%s: %d", Localize("Markers"), DemoGetMarkerCount(pSelf->m_lDemos[pSelf->m_DemolistSelectedIndex].m_Info));
+		dbg_msg("demo", "%s: %s", Localize("Map"), pSelf->m_lDemos[pSelf->m_DemolistSelectedIndex].m_Info.m_aMapName);
+		str_format(aBuf, sizeof(aBuf), Localize("%.3f KiB"), Size);
+		dbg_msg("demo", "%s: %s", Localize("Size"), aBuf);
 		str_format(aBuf, sizeof(aBuf), "%08x", Crc);
-		pSelf->DoInfoBox(&ButtonRight, Localize("Crc"), aBuf);
+		dbg_msg("demo", "%s: %s", Localize("Crc"), aBuf);
 	}
 
 	//unused
