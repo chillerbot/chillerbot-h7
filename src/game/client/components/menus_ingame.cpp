@@ -149,28 +149,13 @@ void CMenus::RenderServerInfo(CUIRect MainView)
 	dbg_msg(Localize("MOTD"), "%s", m_pClient->m_pMotd->GetMotd());
 }
 
-bool CMenus::RenderServerControlServer(CUIRect MainView)
+bool CMenus::RenderServerControlServer()
 {
 	bool doCallVote = false;
-	static int s_VoteList = 0;
-	static CListBoxState s_ListBoxState;
-	CUIRect List = MainView;
-	UiDoListboxHeader(&s_ListBoxState, &List, Localize("Option"), 20.0f, 2.0f);
-	UiDoListboxStart(&s_ListBoxState, &s_VoteList, 20.0f, 0, m_pClient->m_pVoting->m_NumVoteOptions, 1, m_CallvoteSelectedOption, 0, true);
-
 	for(CVoteOptionClient *pOption = m_pClient->m_pVoting->m_pFirst; pOption; pOption = pOption->m_pNext)
 	{
-		CListboxItem Item = UiDoListboxNextItem(&s_ListBoxState, pOption);
-
-		if(Item.m_Visible)
-		{			
-			Item.m_Rect.VMargin(5.0f, &Item.m_Rect);
-			Item.m_Rect.y += 2.0f;
-			UI()->DoLabel(&Item.m_Rect, pOption->m_aDescription, Item.m_Rect.h*ms_FontmodHeight*0.8f, CUI::ALIGN_LEFT);
-		}
+    dbg_msg("vote", "%s", pOption->m_aDescription);
 	}
-
-	m_CallvoteSelectedOption = UiDoListboxEnd(&s_ListBoxState, &doCallVote);
 	return doCallVote;
 }
 
@@ -363,7 +348,7 @@ void CMenus::RenderServerControl(CUIRect MainView)
 	// render page
 	if(s_ControlPage == 0)
 		// double click triggers vote if not spectating
-		doCallVote = RenderServerControlServer(MainView) && m_pClient->m_aClients[m_pClient->m_LocalClientID].m_Team != TEAM_SPECTATORS; 
+		doCallVote = RenderServerControlServer() && m_pClient->m_aClients[m_pClient->m_LocalClientID].m_Team != TEAM_SPECTATORS; 
 	else if(s_ControlPage == 1)
 		RenderServerControlKick(MainView, false);
 	else if(s_ControlPage == 2)
