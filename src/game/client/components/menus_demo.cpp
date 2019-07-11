@@ -5,15 +5,10 @@
 
 #include <engine/demo.h>
 #include <engine/keys.h>
-#include <engine/graphics.h>
-#include <engine/textrender.h>
 #include <engine/storage.h>
 #include <engine/shared/config.h>
 
-#include <game/client/render.h>
 #include <game/client/gameclient.h>
-
-#include <game/client/ui.h>
 
 #include <generated/client_data.h>
 
@@ -140,16 +135,8 @@ inline int DemoGetMarkerCount(CDemoHeader Demo)
 	return DemoMarkerCount;
 }
 
-void CMenus::RenderDemoList(CUIRect MainView)
+void CMenus::RenderDemoList()
 {
-	CUIRect BottomView;
-	MainView.HSplitTop(20.0f, 0, &MainView);
-
-	// cut view
-	MainView.HSplitBottom(80.0f, &MainView, &BottomView);
-	RenderTools()->DrawUIRect(&MainView, vec4(0.0f, 0.0f, 0.0f, g_Config.m_ClMenuAlpha/100.0f), CUI::CORNER_ALL, 5.0f);
-	BottomView.HSplitTop(20.f, 0, &BottomView);
-
 	static int s_Inited = 0;
 	if(!s_Inited)
 	{
@@ -182,90 +169,41 @@ void CMenus::RenderDemoList(CUIRect MainView)
 		}
 	}
 
-	static bool s_DemoDetailsActive = true;
-	const int NumOptions = 8;
-	const float ButtonHeight = 20.0f;
-	const float ButtonSpacing = 2.0f;
-	const float HMargin = 5.0f;
-	const float BackgroundHeight = s_DemoDetailsActive ? (float)(NumOptions+1)*ButtonHeight+(float)NumOptions*ButtonSpacing : ButtonHeight;
-
-	CUIRect ListBox, Button, FileIcon;
-	MainView.HSplitTop(MainView.h - BackgroundHeight - 2 * HMargin, &ListBox, &MainView);
-
-	static CListBoxState s_ListBoxState;
-	UiDoListboxHeader(&s_ListBoxState, &ListBox, Localize("Recorded"), 20.0f, 2.0f);
-	UiDoListboxStart(&s_ListBoxState, &s_ListBoxState, 20.0f, 0, m_lDemos.size(), 1, m_DemolistSelectedIndex);
+  dbg_msg("demos", "%s %d", Localize("Recorded"), m_lDemos.size());
 	for(sorted_array<CDemoItem>::range r = m_lDemos.all(); !r.empty(); r.pop_front())
 	{
-		CListboxItem Item = UiDoListboxNextItem(&s_ListBoxState, (void*)(&r.front()));
 		// marker count
 		const CDemoItem& DemoItem = r.front();
 		int DemoMarkerCount = 0;
 		if(DemoItem.m_Valid && DemoItem.m_InfosLoaded)
 			DemoMarkerCount = DemoGetMarkerCount(DemoItem.m_Info);
 
-		if(Item.m_Visible)
-		{
-			Item.m_Rect.VSplitLeft(Item.m_Rect.h, &FileIcon, &Item.m_Rect);
-			Item.m_Rect.VSplitLeft(5.0f, 0, &Item.m_Rect);
-			FileIcon.Margin(3.0f, &FileIcon);
-			FileIcon.x += 3.0f;
+    if(!DemoItem.m_IsDir)
+    {
+      // if(DemoItem.m_Valid && DemoItem.m_InfosLoaded)
+        // IconColor = DemoMarkerCount > 0 ? vec4(0.5, 1, 0.5, 1) : vec4(1,1,1,1);
+    }
 
-			vec4 IconColor = vec4(1, 1, 1, 1);
-			if(!DemoItem.m_IsDir)
-			{
-				IconColor = vec4(0.6f, 0.6f, 0.6f, 1.0f); // not loaded
-				if(DemoItem.m_Valid && DemoItem.m_InfosLoaded)
-					IconColor = DemoMarkerCount > 0 ? vec4(0.5, 1, 0.5, 1) : vec4(1,1,1,1);
-			}
-
-			DoIconColor(IMAGE_FILEICONS, r.front().m_IsDir?SPRITE_FILE_FOLDER:SPRITE_FILE_DEMO1, &FileIcon, IconColor);
-			if((&r.front() - m_lDemos.base_ptr()) == m_DemolistSelectedIndex) // selected
-			{
-				TextRender()->TextColor(0.0f, 0.0f, 0.0f, 1.0f);
-				TextRender()->TextOutlineColor(1.0f, 1.0f, 1.0f, 0.25f);
-				Item.m_Rect.y += 2.0f;
-				UI()->DoLabel(&Item.m_Rect, r.front().m_aName, Item.m_Rect.h*ms_FontmodHeight*0.8f, CUI::ALIGN_CENTER);
-				TextRender()->TextColor(1.0f, 1.0f, 1.0f, 1.0f);
-				TextRender()->TextOutlineColor(0.0f, 0.0f, 0.0f, 0.3f);
-			}
-			else
-			{
-				Item.m_Rect.y += 2.0f;
-				UI()->DoLabel(&Item.m_Rect, r.front().m_aName, Item.m_Rect.h*ms_FontmodHeight*0.8f, CUI::ALIGN_CENTER);
-			}
-		}
+    if((&r.front() - m_lDemos.base_ptr()) == m_DemolistSelectedIndex) // selected
+    {
+      dbg_msg("demos", "[%s]", r.front().m_aName);
+    }
+    else
+    {
+      dbg_msg("demos", " %s ", r.front().m_aName);
+    }
 	}
-	bool Activated = false;
-	m_DemolistSelectedIndex = UiDoListboxEnd(&s_ListBoxState, &Activated);
 	DemolistOnUpdate(false);
 
-	MainView.HSplitTop(HMargin, 0, &MainView);
-	static int s_DemoDetailsDropdown = 0;
 	if(!m_DemolistSelectedIsDir && m_DemolistSelectedIndex >= 0 && m_lDemos[m_DemolistSelectedIndex].m_Valid)
-		DoIndependentDropdownMenu(&s_DemoDetailsDropdown, &MainView, aFooterLabel, ButtonHeight, RenderDemoDetails, &s_DemoDetailsActive);
+    RenderDemoDetails(this);
 	else
 	{
-		CUIRect Header;
-		MainView.HSplitTop(ButtonHeight, &Header, &MainView);
-		RenderTools()->DrawUIRect(&Header, vec4(0.0f, 0.0f, 0.0f, 0.25f), CUI::CORNER_ALL, 5.0f);
-		Header.y += 2.0f;
-		UI()->DoLabel(&Header, aFooterLabel, ButtonHeight*ms_FontmodHeight*0.8f, CUI::ALIGN_CENTER);
+    dbg_msg("demos", "%s", aFooterLabel);
 	}
 
 	// demo buttons
-	int NumButtons = m_DemolistSelectedIsDir ? 2 : 4;
-	float Spacing = 3.0f;
-	float ButtonWidth = (BottomView.w/6.0f)-(Spacing*5.0)/6.0f;
-	float BackgroundWidth = ButtonWidth*(float)NumButtons+(float)(NumButtons-1)*Spacing;
-
-	BottomView.VSplitRight(BackgroundWidth, 0, &BottomView);
-	RenderTools()->DrawUIRect4(&BottomView, vec4(0.0f, 0.0f, 0.0f, g_Config.m_ClMenuAlpha/100.0f), vec4(0.0f, 0.0f, 0.0f, g_Config.m_ClMenuAlpha/100.0f), vec4(0.0f, 0.0f, 0.0f, 0.0f), vec4(0.0f, 0.0f, 0.0f, 0.0f), CUI::CORNER_T, 5.0f);
-
-	BottomView.HSplitTop(25.0f, &BottomView, 0);
-	BottomView.VSplitLeft(ButtonWidth, &Button, &BottomView);
-	static CButtonContainer s_RefreshButton;
-	if(DoButton_Menu(&s_RefreshButton, Localize("Refresh"), 0, &Button) || (Input()->KeyPress(KEY_R) && (Input()->KeyIsPressed(KEY_LCTRL) || Input()->KeyIsPressed(KEY_RCTRL))))
+	if(!Localize("Refresh"))
 	{
 		DemolistPopulate();
 		DemolistOnUpdate(false);
@@ -273,27 +211,21 @@ void CMenus::RenderDemoList(CUIRect MainView)
 
 	if(!m_DemolistSelectedIsDir)
 	{
-		BottomView.VSplitLeft(Spacing, 0, &BottomView);
-		BottomView.VSplitLeft(ButtonWidth, &Button, &BottomView);
-		static CButtonContainer s_DeleteButton;
-		if(DoButton_Menu(&s_DeleteButton, Localize("Delete"), 0, &Button) || m_DeletePressed)
+		if(!Localize("Delete"))
 		{
 			if(m_DemolistSelectedIndex >= 0)
 			{
-				UI()->SetActiveItem(0);
+				// UI()->SetActiveItem(0);
 				m_Popup = POPUP_DELETE_DEMO;
 				return;
 			}
 		}
 
-		BottomView.VSplitLeft(Spacing, 0, &BottomView);
-		BottomView.VSplitLeft(ButtonWidth, &Button, &BottomView);
-		static CButtonContainer s_RenameButton;
-		if(DoButton_Menu(&s_RenameButton, Localize("Rename"), 0, &Button))
+		if(!Localize("Rename"))
 		{
 			if(m_DemolistSelectedIndex >= 0)
 			{
-				UI()->SetActiveItem(0);
+				// UI()->SetActiveItem(0);
 				m_Popup = POPUP_RENAME_DEMO;
 				str_copy(m_aCurrentDemoFile, m_lDemos[m_DemolistSelectedIndex].m_aFilename, sizeof(m_aCurrentDemoFile));
 				return;
@@ -301,10 +233,7 @@ void CMenus::RenderDemoList(CUIRect MainView)
 		}
 	}
 
-	BottomView.VSplitLeft(Spacing, 0, &BottomView);
-	BottomView.VSplitLeft(ButtonWidth, &Button, &BottomView);
-	static CButtonContainer s_PlayButton;
-	if(DoButton_Menu(&s_PlayButton, m_DemolistSelectedIsDir?Localize("Open"):Localize("Play", "DemoBrowser"), 0, &Button) || Activated)
+	if(false) // m_DemolistSelectedIsDir?Localize("Open"):Localize("Play", "DemoBrowser") || Activated)
 	{
 		if(m_DemolistSelectedIndex >= 0)
 		{
@@ -331,7 +260,7 @@ void CMenus::RenderDemoList(CUIRect MainView)
 					dbg_msg("demo", "%s", Localize("Error loading demo"));
 				else
 				{
-					UI()->SetActiveItem(0);
+					// UI()->SetActiveItem(0);
 					return;
 				}
 			}
@@ -339,7 +268,7 @@ void CMenus::RenderDemoList(CUIRect MainView)
 	}
 }
 
-float CMenus::RenderDemoDetails(CUIRect View, void *pUser)
+float CMenus::RenderDemoDetails(void *pUser)
 {
 	CMenus *pSelf = (CMenus*)pUser;
 

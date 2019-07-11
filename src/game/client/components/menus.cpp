@@ -1828,7 +1828,7 @@ int CMenus::Render()
 				else if(m_MenuPage == PAGE_LAN)
 					RenderServerbrowser(MainView);
 				else if(m_MenuPage == PAGE_DEMOS)
-					RenderDemoList(MainView);
+					RenderDemoList();
 				else if(m_MenuPage == PAGE_SETTINGS)
 					RenderSettings(MainView);
 			}
