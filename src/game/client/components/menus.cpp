@@ -1813,9 +1813,9 @@ int CMenus::Render()
 				else if(m_GamePage == PAGE_PLAYERS)
 					RenderPlayers();
 				else if(m_GamePage == PAGE_SERVER_INFO)
-					RenderServerInfo(MainView);
+					RenderServerInfo();
 				else if(m_GamePage == PAGE_CALLVOTE)
-					RenderServerControl(MainView);
+					RenderServerControl();
 				else if(m_GamePage == PAGE_SETTINGS)
 					RenderSettings(MainView);
 			}

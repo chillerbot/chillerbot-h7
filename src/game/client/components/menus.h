@@ -629,9 +629,9 @@ private:
 	// found in menus_ingame.cpp
 	void RenderGame();
 	void RenderPlayers();
-	void RenderServerInfo(CUIRect MainView);
+	void RenderServerInfo();
 	void HandleCallvote(int Page, bool Force);
-	void RenderServerControl(CUIRect MainView);
+	void RenderServerControl();
 	void RenderServerControlKick(bool FilterSpectators);
 	bool RenderServerControlServer();
 
