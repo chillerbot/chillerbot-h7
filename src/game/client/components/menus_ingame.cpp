@@ -159,7 +159,7 @@ bool CMenus::RenderServerControlServer()
 	return doCallVote;
 }
 
-void CMenus::RenderServerControlKick(CUIRect MainView, bool FilterSpectators)
+void CMenus::RenderServerControlKick(bool FilterSpectators)
 {
 	int NumOptions = 0;
 	int Selected = -1;
@@ -179,56 +179,20 @@ void CMenus::RenderServerControlKick(CUIRect MainView, bool FilterSpectators)
 		}
 	}
 
-	const float Spacing = 2.0f;
-	const float NameWidth = 250.0f;
-	const float ClanWidth = 250.0f;
-	static int s_VoteList = 0;
-	static CListBoxState s_ListBoxState;
-	CUIRect List = MainView;
-	UiDoListboxHeader(&s_ListBoxState, &List, Localize("Player"), 20.0f, 2.0f);
-	UiDoListboxStart(&s_ListBoxState, &s_VoteList, 20.0f, 0, NumOptions, 1, Selected, 0, true);
-
+  dbg_msg("kick", "===] %s [===", Localize("Player"));
 	for(int i = 0; i < NumOptions; i++)
 	{
-		CListboxItem Item = UiDoListboxNextItem(&s_ListBoxState, &aPlayerIDs[i]);
-
-		if(Item.m_Visible)
-		{
-			CUIRect Label, Row;
-			Item.m_Rect.VMargin(5.0f, &Row);
-
-			// player info
-			Row.VSplitLeft(Row.h, &Label, &Row);
-			Label.y += 2.0f;
-			CTeeRenderInfo Info = m_pClient->m_aClients[aPlayerIDs[i]].m_RenderInfo;
-			Info.m_Size = Label.h;
-			RenderTools()->RenderTee(CAnimState::GetIdle(), &Info, EMOTE_NORMAL, vec2(1.0f, 0.0f), vec2(Label.x + Label.h / 2, Label.y + Label.h / 2));
-
-			Row.VSplitLeft(2*Spacing, 0, &Row);
-			if(g_Config.m_ClShowUserId)
-			{
-				Row.VSplitLeft(Row.h, &Label, &Row);
-				Label.y += 2.0f;
-				CTextCursor Cursor;
-				TextRender()->SetCursor(&Cursor, Label.x, Label.y, Label.h*ms_FontmodHeight*0.8f, TEXTFLAG_RENDER);
-				RenderTools()->DrawClientID(TextRender(), &Cursor, aPlayerIDs[i]);
-			}
-
-			Row.VSplitLeft(Spacing, 0, &Row);
-			Row.VSplitLeft(NameWidth, &Label, &Row);
-			Label.y += 2.0f;
-			char aBuf[64];
-			str_format(aBuf, sizeof(aBuf), "%s", g_Config.m_ClShowsocial ? m_pClient->m_aClients[aPlayerIDs[i]].m_aName : "");
-			UI()->DoLabel(&Label, aBuf, Label.h*ms_FontmodHeight*0.8f, CUI::ALIGN_LEFT);
-			Row.VSplitLeft(Spacing, 0, &Row);
-			Row.VSplitLeft(ClanWidth, &Label, &Row);
-			Label.y += 2.0f;
-			str_format(aBuf, sizeof(aBuf), "%s", g_Config.m_ClShowsocial ? m_pClient->m_aClients[aPlayerIDs[i]].m_aClan : "");
-			UI()->DoLabel(&Label, aBuf, Label.h*ms_FontmodHeight*0.8f, CUI::ALIGN_LEFT);
-		}
+    dbg_msg("kick", "+-----------+");
+    if(g_Config.m_ClShowUserId)
+    {
+      dbg_msg("kick", "id: %d", aPlayerIDs[i]);
+    }
+    char aBuf[64];
+    str_format(aBuf, sizeof(aBuf), "%s", g_Config.m_ClShowsocial ? m_pClient->m_aClients[aPlayerIDs[i]].m_aName : "");
+    dbg_msg("kick", "name: %s", aBuf);
+    str_format(aBuf, sizeof(aBuf), "%s", g_Config.m_ClShowsocial ? m_pClient->m_aClients[aPlayerIDs[i]].m_aClan : "");
+    dbg_msg("kick", "clan: %s", aBuf);
 	}
-
-	Selected = UiDoListboxEnd(&s_ListBoxState, 0);
 	m_CallvoteSelectedPlayer = Selected != -1 ? aPlayerIDs[Selected] : -1;
 }
 
@@ -350,9 +314,9 @@ void CMenus::RenderServerControl(CUIRect MainView)
 		// double click triggers vote if not spectating
 		doCallVote = RenderServerControlServer() && m_pClient->m_aClients[m_pClient->m_LocalClientID].m_Team != TEAM_SPECTATORS; 
 	else if(s_ControlPage == 1)
-		RenderServerControlKick(MainView, false);
+		RenderServerControlKick(false);
 	else if(s_ControlPage == 2)
-		RenderServerControlKick(MainView, true);
+		RenderServerControlKick(true);
 
 	// vote menu
 	Extended.Margin(5.0f, &Extended);
