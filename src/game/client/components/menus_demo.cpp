@@ -16,7 +16,6 @@
 #include "menus.h"
 
 void CMenus::RenderDemoPlayer()
-
 {
 	const IDemoPlayer::CInfo *pInfo = DemoPlayer()->BaseInfo();
 

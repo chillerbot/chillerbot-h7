@@ -264,6 +264,7 @@ int CMenus::MenuImageScan(const char *pName, int IsDir, int DirType, void *pUser
 	char aBuf[512];
 	str_format(aBuf, sizeof(aBuf), "skipping load of image from %s", pName);
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "game", aBuf);
+	return 0;
 }
 
 const CMenus::CMenuImage *CMenus::FindMenuImage(const char *pName)
