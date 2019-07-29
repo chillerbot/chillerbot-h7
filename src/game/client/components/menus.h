@@ -687,7 +687,6 @@ private:
 
 	void SetActive(bool Active);
 
-	void InvokePopupMenu(void *pID, int Flags, float X, float Y, float W, float H, int (*pfnFunc)(CMenus *pMenu, CUIRect Rect), void *pExtra=0);
 	void DoPopupMenu();
 
 	IGraphics::CTextureHandle m_TextureBlob;
