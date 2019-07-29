@@ -1752,7 +1752,7 @@ int CMenus::Render()
 	if(m_Popup == POPUP_NONE)
 	{
 		if(m_MenuPage == PAGE_START && Client()->State() == IClient::STATE_OFFLINE)
-			RenderStartMenu(Screen);
+			RenderStartMenu();
 		else
 		{
 			// do tab bar

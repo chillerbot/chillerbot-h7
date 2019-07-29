@@ -622,8 +622,8 @@ private:
 	static float RenderDemoDetails(void *pUser);
 
 	// found in menus_start.cpp
-	void RenderStartMenu(CUIRect MainView);
-	void RenderLogo(CUIRect MainView);
+	void RenderStartMenu();
+	void RenderLogo();
 
 	// found in menus_ingame.cpp
 	void RenderGame();
