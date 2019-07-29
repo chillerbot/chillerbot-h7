@@ -1475,7 +1475,7 @@ void CGameClient::CClientData::UpdateBotRenderInfo(CGameClient *pGameClient, int
 
 	if(pGameClient->m_Snap.m_paPlayerInfos[ClientID] && pGameClient->m_Snap.m_paPlayerInfos[ClientID]->m_PlayerFlags&PLAYERFLAG_BOT)
 	{
-		m_RenderInfo.m_BotTexture = pGameClient->m_pSkins->m_BotTexture;
+		// m_RenderInfo.m_BotTexture = pGameClient->m_pSkins->m_BotTexture;
 		if(!m_RenderInfo.m_BotColor.a) // bot color has not been set; pick a random color once
 		{
 			const unsigned char* pBotColor = s_aBotColors[rand()%(sizeof(s_aBotColors)/sizeof(s_aBotColors[0]))];
@@ -1484,7 +1484,7 @@ void CGameClient::CClientData::UpdateBotRenderInfo(CGameClient *pGameClient, int
 	}
 	else
 	{
-		m_RenderInfo.m_BotTexture.Invalidate();
+		// m_RenderInfo.m_BotTexture.Invalidate();
 		m_RenderInfo.m_BotColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 	}
 }

@@ -60,7 +60,6 @@ CInput::~CInput()
 
 void CInput::Init()
 {
-	m_pGraphics = Kernel()->RequestInterface<IEngineGraphics>();
 	m_pConsole = Kernel()->RequestInterface<IConsole>();
 	// FIXME: unicode handling: use SDL_StartTextInput/SDL_StopTextInput on inputs
 

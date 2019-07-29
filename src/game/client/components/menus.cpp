@@ -132,11 +132,6 @@ void CMenus::DoButton_MenuTabTop_Dummy(const char *pText, int Checked, float Alp
 
 }
 
-int CMenus::DoButton_GridHeader(const void *pID, const char *pText, int Checked, CUI::EAlignment Align)
-{
-	return 0;
-}
-
 int CMenus::DoButton_CheckBox_Common(const void *pID, const char *pText, const char *pBoxText, bool Checked, bool Locked)
 {
 	return 0;
@@ -185,16 +180,6 @@ void CMenus::DoEditBoxOption(void *pID, char *pOption, int OptionLength, const c
 void CMenus::DoScrollbarOption(void *pID, int *pOption, const char *pStr, int Min, int Max, bool Infinite)
 {
 
-}
-
-float CMenus::DoDropdownMenu(void *pID, const char *pStr, float HeaderHeight, FDropdownCallback pfnCallback)
-{
-	return 0;
-}
-
-float CMenus::DoIndependentDropdownMenu(void *pID, const char *pStr, float HeaderHeight, FDropdownCallback pfnCallback, bool* pActive)
-{
-	return 0;
 }
 
 void CMenus::DoInfoBox(const char *pLabel, const char *pValue)
@@ -279,45 +264,7 @@ const CMenus::CMenuImage *CMenus::FindMenuImage(const char *pName)
 
 void CMenus::UpdateVideoFormats()
 {
-	m_NumVideoFormats = 0;
-	for(int i = 0; i < m_NumModes; i++)
-	{
-		int G = gcd(m_aModes[i].m_Width, m_aModes[i].m_Height);
-		int Width = m_aModes[i].m_Width/G;
-		int Height = m_aModes[i].m_Height/G;
 
-		// check if we already have the format
-		bool Found = false;
-		for(int j = 0; j < m_NumVideoFormats; j++)
-		{
-			if(Width == m_aVideoFormats[j].m_WidthValue && Height == m_aVideoFormats[j].m_HeightValue)
-			{
-				Found = true;
-				break;
-			}
-		}
-
-		if(!Found)
-		{
-			m_aVideoFormats[m_NumVideoFormats].m_WidthValue = Width;
-			m_aVideoFormats[m_NumVideoFormats].m_HeightValue = Height;
-			m_NumVideoFormats++;
-
-			// sort the array
-			for(int k = 0; k < m_NumVideoFormats-1; k++) // ffs, bubblesort
-			{
-				for(int j = 0; j < m_NumVideoFormats-k-1; j++)
-				{
-					if((float)m_aVideoFormats[j].m_WidthValue/(float)m_aVideoFormats[j].m_HeightValue > (float)m_aVideoFormats[j+1].m_WidthValue/(float)m_aVideoFormats[j+1].m_HeightValue)
-					{
-						CVideoFormat Tmp = m_aVideoFormats[j];
-						m_aVideoFormats[j] = m_aVideoFormats[j+1];
-						m_aVideoFormats[j+1] = Tmp;
-					}
-				}
-			}
-		}
-	}
 }
 
 void CMenus::UpdatedFilteredVideoModes()

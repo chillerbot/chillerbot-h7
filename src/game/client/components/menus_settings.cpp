@@ -289,12 +289,6 @@ float CMenus::RenderSettingsControlsStats(void *pUser)
 	return 11*20.0f;
 }
 
-bool CMenus::DoResolutionList(CListBoxState* pListBoxState,
-							  const sorted_array<CVideoMode>& lModes)
-{
-	return false;
-}
-
 void CMenus::RenderSettingsGraphics()
 {
 

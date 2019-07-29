@@ -8,7 +8,24 @@
 #include <engine/console.h>
 #include <game/layers.h>
 #include <game/gamecore.h>
-#include "render.h"
+
+class CTeeRenderInfoChiller
+{
+public:
+	CTeeRenderInfoChiller()
+	{
+		for(int i = 0; i < NUM_SKINPARTS; i++)
+			m_aColors[i] = vec4(1,1,1,1);
+		m_Size = 1.0f;
+		m_GotAirJump = 1;
+	};
+
+	int m_HatSpriteIndex;
+	vec4 m_BotColor;
+	vec4 m_aColors[NUM_SKINPARTS];
+	float m_Size;
+	int m_GotAirJump;
+};
 
 class CGameClient : public IGameClient
 {
@@ -33,8 +50,6 @@ class CGameClient : public IGameClient
 
 	class IEngine *m_pEngine;
 	class IInput *m_pInput;
-	class IGraphics *m_pGraphics;
-	class ITextRender *m_pTextRender;
 	class IClient *m_pClient;
 	class ISound *m_pSound;
 	class IConsole *m_pConsole;
@@ -47,7 +62,6 @@ class CGameClient : public IGameClient
 
 	CLayers m_Layers;
 	class CCollision m_Collision;
-	CUI m_UI;
 
 	void ProcessEvents();
 	void ProcessTriggeredEvents(int Events, vec2 Pos);
@@ -180,8 +194,7 @@ public:
 		int m_EmoticonStart;
 		CCharacterCore m_Predicted;
 
-		CTeeRenderInfo m_SkinInfo; // this is what the server reports
-		CTeeRenderInfo m_RenderInfo; // this is what we use
+		CTeeRenderInfoChiller m_RenderInfo; // this is what we use
 
 		float m_Angle;
 		bool m_Active;
@@ -225,8 +238,6 @@ public:
 		bool m_TeamBalance;
 		int m_PlayerSlots;
 	} m_ServerSettings;
-
-	CRenderTools m_RenderTools;
 
 	void OnReset();
 

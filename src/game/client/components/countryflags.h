@@ -14,8 +14,6 @@ public:
 		int m_CountryCode;
 		char m_aCountryCodeString[8];
 		bool m_Blocked;
-		IGraphics::CTextureHandle m_Texture;
-
 		bool operator<(const CCountryFlag &Other) const { return str_comp(m_aCountryCodeString, Other.m_aCountryCodeString) < 0; }
 	};
 

@@ -18,7 +18,6 @@ class CScoreboard : public CComponent
 	bool m_Active;
 	bool m_Activate;
 	int m_PlayerLines;
- 	class CUIRect m_TotalRect;
 
 public:
 	CScoreboard();
@@ -29,7 +28,6 @@ public:
 	
  	bool Active();
 	void ResetPlayerStats(int ClientID);
- 	class CUIRect GetScoreboardRect();
 };
 
 #endif

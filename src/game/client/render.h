@@ -52,10 +52,8 @@ class CRenderTools
 	void DrawRoundRectExt4(float x, float y, float w, float h, vec4 ColorTopLeft, vec4 ColorTopRight, vec4 ColorBottomLeft, vec4 ColorBottomRight, float r, int Corners);
 
 public:
-	class IGraphics *m_pGraphics;
 	class CUI *m_pUI;
 
-	class IGraphics *Graphics() const { return m_pGraphics; }
 	class CUI *UI() const { return m_pUI; }
 
 	void SelectSprite(struct CDataSprite *pSprite, int Flags=0, int sx=0, int sy=0);
@@ -87,8 +85,6 @@ public:
 		float OffsetX, float OffsetY, float Aspect, float Zoom, float aPoints[4]);
 	void MapScreenToGroup(float CenterX, float CenterY, CMapItemGroup *pGroup, float Zoom);
 
-	void DrawClientID(ITextRender* pTextRender, CTextCursor* pCursor, int ID,
-					  const vec4& BgColor = vec4(1, 1, 1, 0.5f), const vec4& TextColor = vec4(0.1f, 0.1f, 0.1f, 1.0f));
 	float GetClientIdRectSize(float FontSize);
 };
 

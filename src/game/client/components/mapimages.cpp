@@ -32,18 +32,6 @@ void CMapImages::OnMenuMapLoad(IMap *pMap)
 	LoadMapImages(pMap, &MenuLayers, MAP_TYPE_MENU);
 }
 
-IGraphics::CTextureHandle CMapImages::GetEasterTexture()
-{
-	return m_EasterTexture;
-}
-
-IGraphics::CTextureHandle CMapImages::Get(int Index) const
-{
-	if(Client()->State() == IClient::STATE_ONLINE || Client()->State() == IClient::STATE_DEMOPLAYBACK)
-		return m_Info[MAP_TYPE_GAME].m_aTextures[clamp(Index, 0, m_Info[MAP_TYPE_GAME].m_Count)];
-	return m_Info[MAP_TYPE_MENU].m_aTextures[clamp(Index, 0, m_Info[MAP_TYPE_MENU].m_Count)];
-}
-
 int CMapImages::Num() const
 {
 	if(Client()->State() == IClient::STATE_ONLINE || Client()->State() == IClient::STATE_DEMOPLAYBACK)

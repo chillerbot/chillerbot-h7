@@ -5,7 +5,6 @@
 
 class CInput : public IEngineInput
 {
-	IEngineGraphics *m_pGraphics;
 	IConsole *m_pConsole;
 	SDL_Joystick *m_pJoystick;
 
@@ -27,8 +26,6 @@ class CInput : public IEngineInput
 
 	void ClearKeyStates();
 	bool KeyState(int Key) const;
-
-	IEngineGraphics *Graphics() { return m_pGraphics; }
 
 public:
 	CInput();

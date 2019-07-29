@@ -97,11 +97,6 @@ bool CScoreboard::Active()
 	return false;
 }
 
-CUIRect CScoreboard::GetScoreboardRect()
-{
-	return m_TotalRect;
-}
-
 const char *CScoreboard::GetClanName(int Team)
 {
 	int ClanPlayers = 0;

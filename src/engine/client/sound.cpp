@@ -207,7 +207,6 @@ int CSound::Init()
 		m_aChannels[i].m_Vol = 255;
 
 	m_SoundEnabled = 0;
-	m_pGraphics = Kernel()->RequestInterface<IEngineGraphics>();
 	m_pStorage = Kernel()->RequestInterface<IStorage>();
 
 	SDL_AudioSpec Format;
@@ -256,9 +255,6 @@ int CSound::Update()
 {
 	// update volume
 	int WantedVolume = g_Config.m_SndVolume;
-
-	if(!m_pGraphics->WindowActive() && g_Config.m_SndNonactiveMute)
-		WantedVolume = 0;
 
 	if(WantedVolume != m_SoundVolume)
 	{

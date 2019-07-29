@@ -81,7 +81,7 @@ int CEditorMap::Save(class IStorage *pStorage, const char *pFileName)
 			Item.m_ImageData = -1;
 		else
 		{
-			int PixelSize = pImg->m_Format == CImageInfo::FORMAT_RGB ? 3 : 4;
+			int PixelSize = pImg->m_Format == CImageInfoGraphics::FORMAT_RGB ? 3 : 4;
 			Item.m_ImageData = df.AddData(Item.m_Width*Item.m_Height*PixelSize, pImg->m_pData);
 		}
 		Item.m_Format = pImg->m_Format;
@@ -301,7 +301,7 @@ int CEditorMap::Load(class IStorage *pStorage, const char *pFileName, int Storag
 				CEditorImage *pImg = new CEditorImage(m_pEditor);
 				pImg->m_External = pItem->m_External;
 
-				if(pItem->m_External || (pItem->m_Version > 1 && pItem->m_Format != CImageInfo::FORMAT_RGB && pItem->m_Format != CImageInfo::FORMAT_RGBA))
+				if(pItem->m_External || (pItem->m_Version > 1 && pItem->m_Format != CImageInfoGraphics::FORMAT_RGB && pItem->m_Format != CImageInfoGraphics::FORMAT_RGBA))
 				{
 					char aBuf[256];
 					str_format(aBuf, sizeof(aBuf),"mapres/%s.png", pName);
@@ -311,8 +311,8 @@ int CEditorMap::Load(class IStorage *pStorage, const char *pFileName, int Storag
 				{
 					pImg->m_Width = pItem->m_Width;
 					pImg->m_Height = pItem->m_Height;
-					pImg->m_Format = pItem->m_Version == 1 ? CImageInfo::FORMAT_RGBA : pItem->m_Format;
-					int PixelSize = pImg->m_Format == CImageInfo::FORMAT_RGB ? 3 : 4;
+					pImg->m_Format = pItem->m_Version == 1 ? CImageInfoGraphics::FORMAT_RGBA : pItem->m_Format;
+					int PixelSize = pImg->m_Format == CImageInfoGraphics::FORMAT_RGB ? 3 : 4;
 
 					// copy image data
 					void *pData = DataFile.GetData(pItem->m_ImageData);

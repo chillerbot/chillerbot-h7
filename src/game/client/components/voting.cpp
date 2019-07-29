@@ -300,7 +300,7 @@ void CVoting::OnRender()
 }
 
 
-void CVoting::RenderBars(CUIRect Bars, bool Text)
+void CVoting::RenderBars(bool Text)
 {
 
 }

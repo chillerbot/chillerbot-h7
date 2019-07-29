@@ -16,11 +16,9 @@ class CMapImages : public CComponent
 	};
 	struct
 	{
-		IGraphics::CTextureHandle m_aTextures[MAX_TEXTURES];
 		int m_Count;
 	} m_Info[NUM_MAP_TYPES];
 
-	IGraphics::CTextureHandle m_EasterTexture;
 	bool m_EasterIsLoaded;
 
 	void LoadMapImages(class IMap *pMap, class CLayers *pLayers, int MapType);
@@ -28,13 +26,10 @@ class CMapImages : public CComponent
 public:
 	CMapImages();
 
-	IGraphics::CTextureHandle Get(int Index) const;
 	int Num() const;
 
 	virtual void OnMapLoad();
 	void OnMenuMapLoad(class IMap *pMap);
-	
-	IGraphics::CTextureHandle GetEasterTexture();
 };
 
 #endif

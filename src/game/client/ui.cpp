@@ -68,35 +68,21 @@ void CUI::ConvertMouseMove(float *x, float *y) const
 
 CUIRect *CUI::Screen()
 {
-	float Aspect = Graphics()->ScreenAspect();
-	float w, h;
-
-	h = 600;
-	w = Aspect*h;
-
-	m_Screen.w = w;
-	m_Screen.h = h;
-
 	return &m_Screen;
 }
 
 float CUI::PixelSize()
 {
-	return Screen()->w/Graphics()->ScreenWidth();
+	return 0x0;
 }
 
 void CUI::ClipEnable(const CUIRect *r)
 {
-	m_ClipRect = *r;
-	m_Clipped = true;
-	float XScale = Graphics()->ScreenWidth()/Screen()->w;
-	float YScale = Graphics()->ScreenHeight()/Screen()->h;
-	Graphics()->ClipEnable((int)(r->x*XScale), (int)(r->y*YScale), (int)(r->w*XScale), (int)(r->h*YScale));
+
 }
 
 void CUI::ClipDisable()
 {
-	Graphics()->ClipDisable();
 	m_Clipped = false;
 }
 
@@ -329,74 +315,11 @@ int CUI::DoPickerLogic(const void *pID, const CUIRect *pRect, float *pX, float *
 
 int CUI::DoColorSelectionLogic(const CUIRect *pRect, const CUIRect *pButton) // it's counter logic! FIXME
 {
-	if(MouseButtonClicked(0) && MouseInside(pRect) && !MouseInside(pButton))
-		return 1;
-	else
 		return 0;
 }
 
-/*
-int CUI::DoButton(const void *id, const char *text, int checked, const CUIRect *r, ui_draw_button_func draw_func, const void *extra)
-{
-	// logic
-	int ret = 0;
-	int inside = ui_MouseInside(r);
-	static int button_used = 0;
-
-	if(ui_ActiveItem() == id)
-	{
-		if(!ui_MouseButton(button_used))
-		{
-			if(inside && checked >= 0)
-				ret = 1+button_used;
-			ui_SetActiveItem(0);
-		}
-	}
-	else if(ui_HotItem() == id)
-	{
-		if(ui_MouseButton(0))
-		{
-			ui_SetActiveItem(id);
-			button_used = 0;
-		}
-
-		if(ui_MouseButton(1))
-		{
-			ui_SetActiveItem(id);
-			button_used = 1;
-		}
-	}
-
-	if(inside)
-		ui_SetHotItem(id);
-
-	if(draw_func)
-		draw_func(id, text, checked, r, extra);
-	return ret;
-}*/
 
 void CUI::DoLabel(const CUIRect *r, const char *pText, float Size, EAlignment Align, float LineWidth, bool MultiLine)
 {
-	// TODO: FIX ME!!!!
-	//Graphics()->BlendNormal();
-	switch(Align)
-	{
-	case ALIGN_CENTER:
-	{
-		float tw = TextRender()->TextWidth(0, Size, pText, -1, LineWidth);
-		TextRender()->Text(0, r->x + r->w/2-tw/2, r->y - Size/10, Size, pText, LineWidth, MultiLine);
-		break;
-	}
-	case ALIGN_LEFT:
-	{
-		TextRender()->Text(0, r->x, r->y - Size/10, Size, pText, LineWidth, MultiLine);
-		break;
-	}
-	case ALIGN_RIGHT:
-	{
-		float tw = TextRender()->TextWidth(0, Size, pText, -1, LineWidth);
-		TextRender()->Text(0, r->x + r->w-tw, r->y - Size/10, Size, pText, LineWidth, MultiLine);
-		break;
-	}
-	}
+
 }

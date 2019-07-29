@@ -71,7 +71,6 @@ void CMenus::RenderPlayers()
 
 			if(g_Config.m_ClShowUserId)
 			{
-				// RenderTools()->DrawClientID(TextRender(), &Cursor, i);
 				dbg_msg(Localize("Player"), "id: %d", i);
 			}
 			char aBuf[64];

@@ -40,18 +40,16 @@ public:
 	};
 
 private:
-	typedef float (*FDropdownCallback)(CUIRect View, void *pUser);
-
 	float ButtonFade(CButtonContainer *pBC, float Seconds, int Checked=0);
 
 
-	int DoButton_SpriteID(CButtonContainer *pBC, int ImageID, int SpriteID, bool Checked, int Corners=CUI::CORNER_ALL, float r=5.0f, bool Fade=true);
+	int DoButton_SpriteID(CButtonContainer *pBC, int ImageID, int SpriteID, bool Checked, int Corners=0, float r=5.0f, bool Fade=true);
 	int DoButton_SpriteClean(int ImageID, int SpriteID);
 	int DoButton_SpriteCleanID(const void *pID, int ImageID, int SpriteID, bool Blend=true);
 	int DoButton_Toggle(const void *pID, int Checked, bool Active);
-	int DoButton_Menu(CButtonContainer *pBC, const char *pText, int Checked, const char *pImageName=0, int Corners=CUI::CORNER_ALL, float r=5.0f, float FontFactor=0.0f, vec4 ColorHot=vec4(1.0f, 1.0f, 1.0f, 0.75f), bool TextFade=true);
+	int DoButton_Menu(CButtonContainer *pBC, const char *pText, int Checked, const char *pImageName=0, int Corners=0, float r=5.0f, float FontFactor=0.0f, vec4 ColorHot=vec4(1.0f, 1.0f, 1.0f, 0.75f), bool TextFade=true);
 	int DoButton_MenuTab(const void *pID, const char *pText, int Checked, int Corners);
-	int DoButton_MenuTabTop(CButtonContainer *pBC, const char *pText, int Checked, float Alpha=1.0f, float FontAlpha=1.0f, int Corners=CUI::CORNER_ALL, float r=5.0f, float FontFactor=0.0f);
+	int DoButton_MenuTabTop(CButtonContainer *pBC, const char *pText, int Checked, float Alpha=1.0f, float FontAlpha=1.0f, int Corners=0, float r=5.0f, float FontFactor=0.0f);
 	void DoButton_MenuTabTop_Dummy(const char *pText, int Checked, float Alpha);
 
 	int DoButton_CheckBox_Common(const void *pID, const char *pText, const char *pBoxText, bool Checked=false, bool Locked=false);
@@ -62,13 +60,10 @@ private:
 
 	int DoIcon(int ImageId, int SpriteId);
 	void DoIconColor(int ImageId, int SpriteId, const vec4& Color);
-	int DoButton_GridHeader(const void *pID, const char *pText, int Checked, CUI::EAlignment Align);
 
-	int DoEditBox(void *pID, char *pStr, unsigned StrSize, float FontSize, float *pOffset, bool Hidden=false, int Corners=CUI::CORNER_ALL);
+	int DoEditBox(void *pID, char *pStr, unsigned StrSize, float FontSize, float *pOffset, bool Hidden=false, int Corners=0);
 	void DoEditBoxOption(void *pID, char *pOption, int OptionLength, const char *pStr, float VSplitVal, float *pOffset, bool Hidden=false);
 	void DoScrollbarOption(void *pID, int *pOption, const char *pStr, int Min, int Max, bool Infinite=false);
-	float DoDropdownMenu(void *pID, const char *pStr, float HeaderHeight, FDropdownCallback pfnCallback);
-	float DoIndependentDropdownMenu(void *pID, const char *pStr, float HeaderHeight, FDropdownCallback pfnCallback, bool* pActive);
 	void DoInfoBox(const char *pLable, const char *pValue);
 
 	float DoScrollbarV(const void *pID, float Current);
@@ -271,8 +266,6 @@ private:
 	struct CMenuImage
 	{
 		char m_aName[64];
-		IGraphics::CTextureHandle m_OrgTexture;
-		IGraphics::CTextureHandle m_GreyTexture;
 	};
 	array<CMenuImage> m_lMenuImages;
 
@@ -290,7 +283,6 @@ private:
 		string m_Name;
 		bool m_HasDay;
 		bool m_HasNight;
-		IGraphics::CTextureHandle m_IconTexture;
 		bool operator<(const CTheme &Other) const { return m_Name < Other.m_Name; }
 	};
 	sorted_array<CTheme> m_lThemes;
@@ -311,10 +303,8 @@ private:
 		CGameIcon(const char *pName) : m_Name(pName) {}
 
 		string m_Name;
-		IGraphics::CTextureHandle m_IconTexture;
 	};
 	array<CGameIcon> m_lGameIcons;
-	IGraphics::CTextureHandle m_GameIconDefault;
 	void DoGameIcon(const char *pName);
 	static int GameIconScan(const char *pName, int IsDir, int DirType, void *pUser);
 
@@ -555,18 +545,8 @@ private:
 		MAX_RESOLUTIONS=256,
 	};
 
-	CVideoMode m_aModes[MAX_RESOLUTIONS];
 	int m_NumModes;
 
-	struct CVideoFormat
-	{
-		int m_WidthValue;
-		int m_HeightValue;
-	};
-
-	CVideoFormat m_aVideoFormats[MAX_RESOLUTIONS];
-	sorted_array<CVideoMode> m_lRecommendedVideoModes;
-	sorted_array<CVideoMode> m_lOtherVideoModes;
 	int m_NumVideoFormats;
 	int m_CurrentVideoFormat;
 	void UpdateVideoFormats();
@@ -638,9 +618,6 @@ private:
 	void RenderSettingsStats();
 	void RenderSettings();
 
-	bool DoResolutionList(CListBoxState* pListBoxState,
-						  const sorted_array<CVideoMode>& lModes);
-
 	// found in menu_callback.cpp
 	static float RenderSettingsControlsMovement(void *pUser);
 	static float RenderSettingsControlsWeapon(void *pUser);
@@ -653,8 +630,6 @@ private:
 	void SetActive(bool Active);
 
 	void DoPopupMenu();
-
-	IGraphics::CTextureHandle m_TextureBlob;
 
 	void ToggleMusic();
 
