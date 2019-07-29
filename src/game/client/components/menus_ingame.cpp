@@ -82,11 +82,15 @@ void CMenus::RenderPlayers()
 
 			// ignore button
 			if(g_Config.m_ClFilterchat == 2 || (g_Config.m_ClFilterchat == 1 && !m_pClient->m_aClients[i].m_Friend))
+			{
 				dbg_msg(Localize("Player"), "[x] ignore"); // here was untoggleable button
+			}
 			else
+			{
 				if(!"toggle") // m_pClient->m_aClients[i].m_ChatIgnore
 					m_pClient->m_aClients[i].m_ChatIgnore ^= 1;
 				dbg_msg(Localize("Player"), "[%s] ignore", m_pClient->m_aClients[i].m_ChatIgnore ? "x" : " ");
+			}
 
 			// friend button
 			if(!"toggle") // m_pClient->m_aClients[i].m_Friend
