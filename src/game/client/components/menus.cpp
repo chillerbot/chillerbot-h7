@@ -1824,9 +1824,9 @@ int CMenus::Render()
 				if(m_MenuPage == PAGE_NEWS)
 					RenderNews(MainView);
 				else if(m_MenuPage == PAGE_INTERNET)
-					RenderServerbrowser(MainView);
+					RenderServerbrowser();
 				else if(m_MenuPage == PAGE_LAN)
-					RenderServerbrowser(MainView);
+					RenderServerbrowser();
 				else if(m_MenuPage == PAGE_DEMOS)
 					RenderDemoList();
 				else if(m_MenuPage == PAGE_SETTINGS)

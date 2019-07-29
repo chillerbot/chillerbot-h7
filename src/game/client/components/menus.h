@@ -347,7 +347,7 @@ private:
 	};
 	array<CGameIcon> m_lGameIcons;
 	IGraphics::CTextureHandle m_GameIconDefault;
-	void DoGameIcon(const char *pName, const CUIRect *pRect);
+	void DoGameIcon(const char *pName);
 	static int GameIconScan(const char *pName, int IsDir, int DirType, void *pUser);
 
 	int64 m_LastInput;
@@ -636,21 +636,21 @@ private:
 
 	// found in menus_browser.cpp
 	// int m_ScrollOffset;
-	void RenderServerbrowserServerList(CUIRect View);
-	void RenderServerbrowserSidebar(CUIRect View);
-	void RenderServerbrowserFriendTab(CUIRect View);
-	void RenderServerbrowserFilterTab(CUIRect View);
-	void RenderServerbrowserInfoTab(CUIRect View);
-	void RenderServerbrowserFriendList(CUIRect View);
-	void RenderDetailInfo(CUIRect View, const CServerInfo *pInfo);
-	void RenderDetailScoreboard(CUIRect View, const CServerInfo *pInfo, int RowCount, vec4 TextColor = vec4(1,1,1,1));
-	void RenderServerbrowserServerDetail(CUIRect View, const CServerInfo *pInfo);
-	//void RenderServerbrowserFriends(CUIRect View);
-	void RenderServerbrowserBottomBox(CUIRect View);
+	void RenderServerbrowserServerList();
+	void RenderServerbrowserSidebar();
+	void RenderServerbrowserFriendTab();
+	void RenderServerbrowserFilterTab();
+	void RenderServerbrowserInfoTab();
+	void RenderServerbrowserFriendList();
+	void RenderDetailInfo(const CServerInfo *pInfo);
+	void RenderDetailScoreboard(const CServerInfo *pInfo, int RowCount, vec4 TextColor = vec4(1,1,1,1));
+	void RenderServerbrowserServerDetail(const CServerInfo *pInfo);
+	//void RenderServerbrowserFriends();
+	void RenderServerbrowserBottomBox();
 	void RenderServerbrowserOverlay();
-	void RenderFilterHeader(CUIRect View, int FilterIndex);
-	int DoBrowserEntry(const void *pID, CUIRect View, const CServerInfo *pEntry, const CBrowserFilter *pFilter, bool Selected);
-	void RenderServerbrowser(CUIRect MainView);
+	void RenderFilterHeader(int FilterIndex);
+	int DoBrowserEntry(const void *pID, const CServerInfo *pEntry, const CBrowserFilter *pFilter, bool Selected);
+	void RenderServerbrowser();
 	static void ConchainFriendlistUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 	static void ConchainServerbrowserUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 	static void ConchainToggleMusic(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
