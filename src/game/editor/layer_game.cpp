@@ -15,9 +15,7 @@ CLayerGame::~CLayerGame()
 {
 }
 
-int CLayerGame::RenderProperties(CUIRect *pToolbox)
+int CLayerGame::RenderProperties()
 {
-	int r = CLayerTiles::RenderProperties(pToolbox);
-	m_Image = -1;
-	return r;
+	return 0;
 }

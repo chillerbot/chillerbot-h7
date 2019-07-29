@@ -4,13 +4,10 @@
 #include <base/math.h>
 
 #include <engine/console.h>
-#include <engine/graphics.h>
 
 #include "editor.h"
 #include <generated/client_data.h>
 #include <game/client/localization.h>
-#include <game/client/render.h>
-
 
 CLayerQuads::CLayerQuads()
 {
@@ -25,14 +22,7 @@ CLayerQuads::~CLayerQuads()
 
 void CLayerQuads::Render()
 {
-	Graphics()->TextureClear();
-	if(m_Image >= 0 && m_Image < m_pEditor->m_Map.m_lImages.size())
-		Graphics()->TextureSet(m_pEditor->m_Map.m_lImages[m_Image]->m_Texture);
 
-	//Graphics()->BlendNone();
-	//m_pEditor->RenderTools()->RenderQuads(m_lQuads.base_ptr(), m_lQuads.size(), LAYERRENDERFLAG_OPAQUE, m_pEditor->EnvelopeEval, m_pEditor);
-	Graphics()->BlendNormal();
-	m_pEditor->RenderTools()->RenderQuads(m_lQuads.base_ptr(), m_lQuads.size(), LAYERRENDERFLAG_TRANSPARENT, m_pEditor->EnvelopeEval, m_pEditor);
 }
 
 CQuad *CLayerQuads::NewQuad()
@@ -78,53 +68,14 @@ CQuad *CLayerQuads::NewQuad()
 	return q;
 }
 
-void CLayerQuads::BrushSelecting(CUIRect Rect)
+void CLayerQuads::BrushSelecting()
 {
-	// draw selection rectangle
-	vec4 RectColor = HexToRgba(g_Config.m_EdColorSelectionQuad);
-	IGraphics::CLineItem Array[4] = {
-		IGraphics::CLineItem(Rect.x, Rect.y, Rect.x+Rect.w, Rect.y),
-		IGraphics::CLineItem(Rect.x+Rect.w, Rect.y, Rect.x+Rect.w, Rect.y+Rect.h),
-		IGraphics::CLineItem(Rect.x+Rect.w, Rect.y+Rect.h, Rect.x, Rect.y+Rect.h),
-		IGraphics::CLineItem(Rect.x, Rect.y+Rect.h, Rect.x, Rect.y)};
-	Graphics()->TextureClear();
-	Graphics()->LinesBegin();
-	Graphics()->SetColor(RectColor.r*RectColor.a, RectColor.g*RectColor.a, RectColor.b*RectColor.a, RectColor.a);
-	Graphics()->LinesDraw(Array, 4);
-	Graphics()->LinesEnd();
+
 }
 
-int CLayerQuads::BrushGrab(CLayerGroup *pBrush, CUIRect Rect)
+int CLayerQuads::BrushGrab(CLayerGroup *pBrush)
 {
-	// create new layers
-	CLayerQuads *pGrabbed = new CLayerQuads();
-	pGrabbed->m_pEditor = m_pEditor;
-	pGrabbed->m_Image = m_Image;
-	pBrush->AddLayer(pGrabbed);
-
-	//dbg_msg("", "%f %f %f %f", rect.x, rect.y, rect.w, rect.h);
-	for(int i = 0; i < m_lQuads.size(); i++)
-	{
-		CQuad *q = &m_lQuads[i];
-		float px = fx2f(q->m_aPoints[4].x);
-		float py = fx2f(q->m_aPoints[4].y);
-
-		if(px > Rect.x && px < Rect.x+Rect.w && py > Rect.y && py < Rect.y+Rect.h)
-		{
-			CQuad n;
-			n = *q;
-
-			for(int p = 0; p < 5; p++)
-			{
-				n.m_aPoints[p].x -= f2fx(Rect.x);
-				n.m_aPoints[p].y -= f2fx(Rect.y);
-			}
-
-			pGrabbed->m_lQuads.add(n);
-		}
-	}
-
-	return pGrabbed->m_lQuads.size()?1:0;
+	return 0;
 }
 
 void CLayerQuads::BrushPlace(CLayer *pBrush, float wx, float wy)
@@ -198,34 +149,8 @@ void CLayerQuads::GetSize(float *w, float *h) const
 
 extern int gs_SelectedPoints;
 
-int CLayerQuads::RenderProperties(CUIRect *pToolBox)
+int CLayerQuads::RenderProperties()
 {
-	// layer props
-	enum
-	{
-		PROP_IMAGE=0,
-		NUM_PROPS,
-	};
-
-	CProperty aProps[] = {
-		{"Image", m_Image, PROPTYPE_IMAGE, -1, 0},
-		{0},
-	};
-
-	static int s_aIds[NUM_PROPS] = {0};
-	int NewVal = 0;
-	int Prop = m_pEditor->DoProperties(pToolBox, aProps, s_aIds, &NewVal);
-	if(Prop != -1)
-		m_pEditor->m_Map.m_Modified = true;
-
-	if(Prop == PROP_IMAGE)
-	{
-		if(NewVal >= 0)
-			m_Image = NewVal%m_pEditor->m_Map.m_lImages.size();
-		else
-			m_Image = -1;
-	}
-
 	return 0;
 }
 

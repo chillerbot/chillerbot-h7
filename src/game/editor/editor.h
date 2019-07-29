@@ -14,20 +14,43 @@
 #include <base/tl/sorted_array.h>
 #include <base/tl/string.h>
 
-#include <game/client/ui.h>
 #include <game/mapitems.h>
-#include <game/client/render.h>
 
 #include <engine/shared/config.h>
 #include <engine/shared/datafile.h>
 #include <engine/editor.h>
-#include <engine/graphics.h>
 
 #include "auto_map.h"
 
 typedef void (*INDEX_MODIFY_FUNC)(int *pIndex);
 
-//CRenderTools m_RenderTools;
+class CImageInfoGraphics // from graphics.h original name CImageInfo
+{
+public:
+	enum
+	{
+		FORMAT_AUTO=-1,
+		FORMAT_RGB=0,
+		FORMAT_RGBA=1,
+		FORMAT_ALPHA=2,
+	};
+
+	/* Variable: width
+		Contains the width of the image */
+	int m_Width;
+
+	/* Variable: height
+		Contains the height of the image */
+	int m_Height;
+
+	/* Variable: format
+		Contains the format of the image. See <Image Formats> for more information. */
+	int m_Format;
+
+	/* Variable: data
+		Pointer to the image data. */
+	void *m_pData;
+};
 
 // CEditor SPECIFIC
 enum
@@ -110,7 +133,6 @@ public:
 
 	int Eval(float Time, float *pResult)
 	{
-		CRenderTools::RenderEvalEnvelope(m_lPoints.base_ptr(), m_lPoints.size(), m_Channels, Time, pResult);
 		return m_Channels;
 	}
 
@@ -151,8 +173,6 @@ class CLayer
 {
 public:
 	class CEditor *m_pEditor;
-	class IGraphics *Graphics();
-	class ITextRender *TextRender();
 
 	CLayer()
 	{
@@ -170,9 +190,9 @@ public:
 	}
 
 
-	virtual void BrushSelecting(CUIRect Rect) {}
-	virtual int BrushGrab(CLayerGroup *pBrush, CUIRect Rect) { return 0; }
-	virtual void FillSelection(bool Empty, CLayer *pBrush, CUIRect Rect) {}
+	virtual void BrushSelecting() {}
+	virtual int BrushGrab(CLayerGroup *pBrush) { return 0; }
+	virtual void FillSelection(bool Empty, CLayer *pBrush) {}
 	virtual void BrushDraw(CLayer *pBrush, float x, float y) {}
 	virtual void BrushPlace(CLayer *pBrush, float x, float y) {}
 	virtual void BrushFlipX() {}
@@ -180,7 +200,7 @@ public:
 	virtual void BrushRotate(float Amount) {}
 
 	virtual void Render() {}
-	virtual int RenderProperties(CUIRect *pToolbox) { return 0; }
+	virtual int RenderProperties() { return 0; }
 
 	virtual void ModifyImageIndex(INDEX_MODIFY_FUNC pfnFunc) {}
 	virtual void ModifyEnvelopeIndex(INDEX_MODIFY_FUNC pfnFunc) {}
@@ -224,7 +244,7 @@ public:
 	CLayerGroup();
 	~CLayerGroup();
 
-	void Convert(CUIRect *pRect);
+	void Convert();
 	void Render();
 	void MapScreen();
 	void Mapping(float *pPoints);
@@ -259,7 +279,7 @@ public:
 	}
 };
 
-class CEditorImage : public CImageInfo
+class CEditorImage : public CImageInfoGraphics
 {
 public:
 	CEditor *m_pEditor;
@@ -269,10 +289,6 @@ public:
 		m_pEditor = pEditor;
 		m_aName[0] = 0;
 		m_External = 0;
-		m_Width = 0;
-		m_Height = 0;
-		m_pData = 0;
-		m_Format = 0;
 		m_pAutoMapper = 0;
 	}
 
@@ -281,7 +297,6 @@ public:
 	void AnalyseTileFlags();
 	void LoadAutoMapper();
 
-	IGraphics::CTextureHandle m_Texture;
 	int m_External;
 	char m_aName[128];
 	unsigned char m_aTileFlags[256];
@@ -423,20 +438,20 @@ public:
 
 	int ConvertX(float x) const;
 	int ConvertY(float y) const;
-	void Convert(CUIRect Rect, RECTi *pOut);
-	void Snap(CUIRect *pRect);
+	void Convert(RECTi *pOut);
+	void Snap();
 	void Clamp(RECTi *pRect);
 
-	virtual void BrushSelecting(CUIRect Rect);
-	virtual int BrushGrab(CLayerGroup *pBrush, CUIRect Rect);
-	virtual void FillSelection(bool Empty, CLayer *pBrush, CUIRect Rect);
+	virtual void BrushSelecting();
+	virtual int BrushGrab(CLayerGroup *pBrush);
+	virtual void FillSelection(bool Empty, CLayer *pBrush);
 	virtual void BrushDraw(CLayer *pBrush, float wx, float wy);
 	virtual void BrushFlipX();
 	virtual void BrushFlipY();
 	virtual void BrushRotate(float Amount);
 
 	virtual void ShowInfo();
-	virtual int RenderProperties(CUIRect *pToolbox);
+	virtual int RenderProperties();
 
 	virtual void ModifyImageIndex(INDEX_MODIFY_FUNC pfnFunc);
 	virtual void ModifyEnvelopeIndex(INDEX_MODIFY_FUNC pfnFunc);
@@ -446,7 +461,6 @@ public:
 
 	void GetSize(float *w, float *h) const { *w = m_Width*32.0f; *h = m_Height*32.0f; }
 
-	IGraphics::CTextureHandle m_Texture;
 	int m_Game;
 	int m_Image;
 	int m_Width;
@@ -471,14 +485,14 @@ public:
 	virtual void Render();
 	CQuad *NewQuad();
 
-	virtual void BrushSelecting(CUIRect Rect);
-	virtual int BrushGrab(CLayerGroup *pBrush, CUIRect Rect);
+	virtual void BrushSelecting();
+	virtual int BrushGrab(CLayerGroup *pBrush);
 	virtual void BrushPlace(CLayer *pBrush, float wx, float wy);
 	virtual void BrushFlipX();
 	virtual void BrushFlipY();
 	virtual void BrushRotate(float Amount);
 
-	virtual int RenderProperties(CUIRect *pToolbox);
+	virtual int RenderProperties();
 
 	virtual void ModifyImageIndex(INDEX_MODIFY_FUNC pfnFunc);
 	virtual void ModifyEnvelopeIndex(INDEX_MODIFY_FUNC pfnFunc);
@@ -495,7 +509,7 @@ public:
 	CLayerGame(int w, int h);
 	~CLayerGame();
 
-	virtual int RenderProperties(CUIRect *pToolbox);
+	virtual int RenderProperties();
 };
 
 class CEditor : public IEditor
@@ -503,27 +517,17 @@ class CEditor : public IEditor
 	class IInput *m_pInput;
 	class IClient *m_pClient;
 	class IConsole *m_pConsole;
-	class IGraphics *m_pGraphics;
-	class ITextRender *m_pTextRender;
 	class IStorage *m_pStorage;
-	CRenderTools m_RenderTools;
-	CUI m_UI;
 public:
 	class IInput *Input() { return m_pInput; };
 	class IClient *Client() { return m_pClient; };
 	class IConsole *Console() { return m_pConsole; };
-	class IGraphics *Graphics() { return m_pGraphics; };
-	class ITextRender *TextRender() { return m_pTextRender; };
 	class IStorage *Storage() { return m_pStorage; };
-	CUI *UI() { return &m_UI; }
-	CRenderTools *RenderTools() { return &m_RenderTools; }
 
 	CEditor() : m_TilesetPicker(16, 16)
 	{
 		m_pInput = 0;
 		m_pClient = 0;
-		m_pGraphics = 0;
-		m_pTextRender = 0;
 
 		m_Mode = MODE_LAYERS;
 		m_Dialog = 0;
@@ -615,7 +619,7 @@ public:
 	CLayer *GetSelectedLayer(int Index);
 	CLayerGroup *GetSelectedGroup();
 
-	int DoProperties(CUIRect *pToolbox, CProperty *pProps, int *pIDs, int *pNewVal);
+	int DoProperties(CProperty *pProps, int *pIDs, int *pNewVal);
 
 	int m_Mode;
 	int m_Dialog;
@@ -737,11 +741,6 @@ public:
 	vec3 m_InitialPickerColor;
 	vec3 m_SelectedPickerColor;
 
-	IGraphics::CTextureHandle m_CheckerTexture;
-	IGraphics::CTextureHandle m_BackgroundTexture;
-	IGraphics::CTextureHandle m_CursorTexture;
-	IGraphics::CTextureHandle m_EntitiesTexture;
-
 	CLayerGroup m_Brush;
 	CLayerTiles m_TilesetPicker;
 
@@ -754,46 +753,43 @@ public:
 	void DoMapMagic(int ImageID, int SrcIndex);
 
 	void DoMapBorder();
-	int DoButton_Editor_Common(const void *pID, const char *pText, int Checked, const CUIRect *pRect, int Flags, const char *pToolTip);
-	int DoButton_Editor(const void *pID, const char *pText, int Checked, const CUIRect *pRect, int Flags, const char *pToolTip);
+	int DoButton_Editor_Common(const void *pID, const char *pText, int Checked, int Flags, const char *pToolTip);
+	int DoButton_Editor(const void *pID, const char *pText, int Checked, int Flags, const char *pToolTip);
 
-	int DoButton_Tab(const void *pID, const char *pText, int Checked, const CUIRect *pRect, int Flags, const char *pToolTip);
-	int DoButton_Ex(const void *pID, const char *pText, int Checked, const CUIRect *pRect, int Flags, const char *pToolTip, int Corners, float FontSize=10.0f);
-	int DoButton_ButtonDec(const void *pID, const char *pText, int Checked, const CUIRect *pRect, int Flags, const char *pToolTip);
-	int DoButton_ButtonInc(const void *pID, const char *pText, int Checked, const CUIRect *pRect, int Flags, const char *pToolTip);
+	int DoButton_Tab(const void *pID, const char *pText, int Checked, int Flags, const char *pToolTip);
+	int DoButton_Ex(const void *pID, const char *pText, int Checked, int Flags, const char *pToolTip, int Corners, float FontSize=10.0f);
+	int DoButton_ButtonDec(const void *pID, const char *pText, int Checked, int Flags, const char *pToolTip);
+	int DoButton_ButtonInc(const void *pID, const char *pText, int Checked, int Flags, const char *pToolTip);
 
-	int DoButton_File(const void *pID, const char *pText, int Checked, const CUIRect *pRect, int Flags, const char *pToolTip);
-	int DoButton_Image(const void *pID, const char *pText, int Checked, const CUIRect *pRect, int Flags, const char *pToolTip, bool Used);
+	int DoButton_File(const void *pID, const char *pText, int Checked, int Flags, const char *pToolTip);
+	int DoButton_Image(const void *pID, const char *pText, int Checked, int Flags, const char *pToolTip, bool Used);
 
-	int DoButton_Menu(const void *pID, const char *pText, int Checked, const CUIRect *pRect, int Flags, const char *pToolTip);
-	int DoButton_MenuItem(const void *pID, const char *pText, int Checked, const CUIRect *pRect, int Flags=0, const char *pToolTip=0);
+	int DoButton_Menu(const void *pID, const char *pText, int Checked, int Flags, const char *pToolTip);
+	int DoButton_MenuItem(const void *pID, const char *pText, int Checked, int Flags=0, const char *pToolTip=0);
 
-	int DoEditBox(void *pID, const CUIRect *pRect, char *pStr, unsigned StrSize, float FontSize, float *Offset, bool Hidden=false, int Corners=CUI::CORNER_ALL);
-
-	void RenderBackground(CUIRect View, IGraphics::CTextureHandle Texture, float Size, float Brightness);
+	int DoEditBox(void *pID, char *pStr, unsigned StrSize, float FontSize, float *Offset, bool Hidden=false, int Corners=0);
 
 	void RenderGrid(CLayerGroup *pGroup);
 
-	void UiInvokePopupMenu(void *pID, int Flags, float X, float Y, float W, float H, int (*pfnFunc)(CEditor *pEditor, CUIRect Rect), void *pExtra=0);
 	void UiDoPopupMenu();
 
-	int UiDoValueSelector(void *pID, CUIRect *pRect, const char *pLabel, int Current, int Min, int Max, int Step, float Scale, const char *pToolTip);
+	int UiDoValueSelector(void *pID, const char *pLabel, int Current, int Min, int Max, int Step, float Scale, const char *pToolTip);
 
-	static int PopupGroup(CEditor *pEditor, CUIRect View);
-	static int PopupLayer(CEditor *pEditor, CUIRect View);
-	static int PopupQuad(CEditor *pEditor, CUIRect View);
-	static int PopupPoint(CEditor *pEditor, CUIRect View);
-	static int PopupNewFolder(CEditor *pEditor, CUIRect View);
-	static int PopupMapInfo(CEditor *pEditor, CUIRect View);
-	static int PopupEvent(CEditor *pEditor, CUIRect View);
-	static int PopupSelectImage(CEditor *pEditor, CUIRect View);
-	static int PopupSelectGametileOp(CEditor *pEditor, CUIRect View);
-	static int PopupImage(CEditor *pEditor, CUIRect View);
-	static int PopupMenuFile(CEditor *pEditor, CUIRect View);
-	static int PopupSelectConfigAutoMap(CEditor *pEditor, CUIRect View);
-	static int PopupSelectDoodadRuleSet(CEditor *pEditor, CUIRect View);
-	static int PopupDoodadAutoMap(CEditor *pEditor, CUIRect View);
-	static int PopupColorPicker(CEditor *pEditor, CUIRect View);
+	static int PopupGroup(CEditor *pEditor);
+	static int PopupLayer(CEditor *pEditor);
+	static int PopupQuad(CEditor *pEditor);
+	static int PopupPoint(CEditor *pEditor);
+	static int PopupNewFolder(CEditor *pEditor);
+	static int PopupMapInfo(CEditor *pEditor);
+	static int PopupEvent(CEditor *pEditor);
+	static int PopupSelectImage(CEditor *pEditor);
+	static int PopupSelectGametileOp(CEditor *pEditor);
+	static int PopupImage(CEditor *pEditor);
+	static int PopupMenuFile(CEditor *pEditor);
+	static int PopupSelectConfigAutoMap(CEditor *pEditor);
+	static int PopupSelectDoodadRuleSet(CEditor *pEditor);
+	static int PopupDoodadAutoMap(CEditor *pEditor);
+	static int PopupColorPicker(CEditor *pEditor);
 
 	static void CallbackOpenMap(const char *pFileName, int StorageType, void *pUser);
 	static void CallbackAppendMap(const char *pFileName, int StorageType, void *pUser);
@@ -810,29 +806,28 @@ public:
 
 	vec4 ButtonColorMul(const void *pID);
 
-	void DoQuadEnvelopes(const array<CQuad> &m_lQuads, IGraphics::CTextureHandle Texture);
 	void DoQuadEnvPoint(const CQuad *pQuad, int QIndex, int pIndex);
 	void DoQuadPoint(CQuad *pQuad, int QuadIndex, int v);
 
-	void DoMapEditor(CUIRect View, CUIRect Toolbar);
-	void DoToolbar(CUIRect Toolbar);
+	void DoMapEditor();
+	void DoToolbar();
 	void DoQuad(CQuad *pQuad, int Index);
-	float UiDoScrollbarV(const void *pID, const CUIRect *pRect, float Current);
+	float UiDoScrollbarV(const void *pID, float Current);
 	vec4 GetButtonColor(const void *pID, int Checked);
 
 	static void ReplaceImage(const char *pFilename, int StorageType, void *pUser);
 	static void AddImage(const char *pFilename, int StorageType, void *pUser);
 
-	void RenderImages(CUIRect Toolbox, CUIRect Toolbar, CUIRect View);
-	void RenderLayers(CUIRect Toolbox, CUIRect Toolbar, CUIRect View);
-	void RenderModebar(CUIRect View);
-	void RenderStatusbar(CUIRect View);
-	void RenderEnvelopeEditor(CUIRect View);
+	void RenderImages();
+	void RenderLayers();
+	void RenderModebar();
+	void RenderStatusbar();
+	void RenderEnvelopeEditor();
 
-	void RenderMenubar(CUIRect Menubar);
+	void RenderMenubar();
 	void RenderFileDialog();
 
-	void AddFileDialogEntry(int Index, CUIRect *pView);
+	void AddFileDialogEntry(int Index);
 	void SortImages();
 	static void ExtractName(const char *pFileName, char *pName, int BufferSize)
 	{
@@ -853,9 +848,5 @@ public:
 	int GetLineDistance() const;
 	void ZoomMouseTarget(float ZoomFactor);
 };
-
-// make sure to inline this function
-inline class IGraphics *CLayer::Graphics() { return m_pEditor->Graphics(); }
-inline class ITextRender *CLayer::TextRender() { return m_pEditor->TextRender(); }
 
 #endif
