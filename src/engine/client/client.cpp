@@ -617,11 +617,6 @@ void CClient::DebugRender()
 	if(!g_Config.m_Debug)
 		return;
 
-	//m_pGraphics->BlendNormal();
-	Graphics()->TextureSet(m_DebugFont);
-	Graphics()->MapScreen(0,0,Graphics()->ScreenWidth(),Graphics()->ScreenHeight());
-	Graphics()->QuadsBegin();
-
 	if(time_get()-LastSnap > time_freq())
 	{
 		LastSnap = time_get();
@@ -636,12 +631,9 @@ void CClient::DebugRender()
 		total = 42
 	*/
 	FrameTimeAvg = FrameTimeAvg*0.9f + m_RenderFrameTime*0.1f;
-	str_format(aBuffer, sizeof(aBuffer), "ticks: %8d %8d gfxmem: %dk fps: %3d",
-		m_CurGameTick, m_PredTick,
-		Graphics()->MemoryUsage()/1024,
-		(int)(1.0f/FrameTimeAvg + 0.5f));
-	Graphics()->QuadsText(2, 2, 16, aBuffer);
-
+	str_format(aBuffer, sizeof(aBuffer), "cur-ticks: %8d pred-ticks: %8d",
+		m_CurGameTick, m_PredTick);
+	dbg_msg("dbg", "%s", aBuffer);
 
 	{
 		int SendPackets = (Current.sent_packets-Prev.sent_packets);
@@ -656,29 +648,12 @@ void CClient::DebugRender()
 		str_format(aBuffer, sizeof(aBuffer), "send: %3d %5d+%4d=%5d (%3d kbps) avg: %5d\nrecv: %3d %5d+%4d=%5d (%3d kbps) avg: %5d",
 			SendPackets, SendBytes, SendPackets*42, SendTotal, (SendTotal*8)/1024, SendBytes/SendPackets,
 			RecvPackets, RecvBytes, RecvPackets*42, RecvTotal, (RecvTotal*8)/1024, RecvBytes/RecvPackets);
-		Graphics()->QuadsText(2, 14, 16, aBuffer);
-	}
-
-	// render rates
-	{
-		int y = 0;
-		int i;
-		for(i = 0; i < 256; i++)
-		{
-			if(m_SnapshotDelta.GetDataRate(i))
-			{
-				str_format(aBuffer, sizeof(aBuffer), "%4d %20s: %8d %8d %8d", i, GameClient()->GetItemName(i), m_SnapshotDelta.GetDataRate(i)/8, m_SnapshotDelta.GetDataUpdates(i),
-					(m_SnapshotDelta.GetDataRate(i)/m_SnapshotDelta.GetDataUpdates(i))/8);
-				Graphics()->QuadsText(2, 100+y*12, 16, aBuffer);
-				y++;
-			}
-		}
+		dbg_msg("dbg", "%s", aBuffer);
 	}
 
 	str_format(aBuffer, sizeof(aBuffer), "pred: %d ms",
 		(int)((m_PredictedTime.Get(Now)-m_GameTime.Get(Now))*1000/(float)time_freq()));
-	Graphics()->QuadsText(2, 70, 16, aBuffer);
-	Graphics()->QuadsEnd();
+	dbg_msg("dbg", "%s", aBuffer);
 }
 
 void CClient::Quit()
@@ -693,9 +668,6 @@ const char *CClient::ErrorString() const
 
 void CClient::Render()
 {
-	if(g_Config.m_GfxClear)
-		Graphics()->Clear(1,1,0);
-
 	GameClient()->OnRender();
 	DebugRender();
 }
