@@ -3,8 +3,6 @@
 #include <engine/editor.h>
 #include <engine/engine.h>
 #include <engine/friends.h>
-#include <engine/graphics.h>
-#include <engine/textrender.h>
 #include <engine/demo.h>
 #include <engine/map.h>
 #include <engine/storage.h>
@@ -18,7 +16,6 @@
 
 #include <game/version.h>
 #include "localization.h"
-#include "render.h"
 
 #include "gameclient.h"
 
@@ -171,7 +168,6 @@ void CGameClient::OnConsoleInit()
 {
 	m_pEngine = Kernel()->RequestInterface<IEngine>();
 	m_pClient = Kernel()->RequestInterface<IClient>();
-	m_pTextRender = Kernel()->RequestInterface<ITextRender>();
 	m_pSound = Kernel()->RequestInterface<ISound>();
 	m_pInput = Kernel()->RequestInterface<IInput>();
 	m_pConsole = Kernel()->RequestInterface<IConsole>();
@@ -296,13 +292,6 @@ void CGameClient::OnConsoleInit()
 
 void CGameClient::OnInit()
 {
-	m_pGraphics = Kernel()->RequestInterface<IGraphics>();
-
-	// propagate pointers
-	m_UI.SetGraphics(Graphics(), TextRender());
-	m_RenderTools.m_pGraphics = Graphics();
-	m_RenderTools.m_pUI = UI();
-
 	int64 Start = time_get();
 
 	// set the language
@@ -321,12 +310,6 @@ void CGameClient::OnInit()
 	if(File)
 	{
 		io_close(File);
-		if(TextRender()->LoadFont(aFilename))
-		{
-			char aBuf[256];
-			str_format(aBuf, sizeof(aBuf), "failed to load font. filename='%s'", aFontName);
-			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "gameclient", aBuf);
-		}
 	}
 
 	// init all components
@@ -336,7 +319,6 @@ void CGameClient::OnInit()
 	// setup load amount// load textures
 	for(int i = 0; i < g_pData->m_NumImages; i++)
 	{
-		g_pData->m_aImages[i].m_Id = Graphics()->LoadTexture(g_pData->m_aImages[i].m_pFilename, IStorage::TYPE_ALL, CImageInfo::FORMAT_AUTO, g_pData->m_aImages[i].m_Flag ? IGraphics::TEXLOAD_LINEARMIPMAPS : 0);
 		m_pMenus->RenderLoading();
 	}
 
@@ -391,8 +373,6 @@ void CGameClient::OnConnected()
 {
 	m_Layers.Init(Kernel());
 	m_Collision.Init(Layers());
-
-	RenderTools()->RenderTilemapGenerateSkip(Layers());
 
 	for(int i = 0; i < m_All.m_Num; i++)
 	{
