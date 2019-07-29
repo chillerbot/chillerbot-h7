@@ -1817,7 +1817,7 @@ int CMenus::Render()
 				else if(m_GamePage == PAGE_CALLVOTE)
 					RenderServerControl();
 				else if(m_GamePage == PAGE_SETTINGS)
-					RenderSettings(MainView);
+					RenderSettings();
 			}
 			else
 			{
@@ -1830,7 +1830,7 @@ int CMenus::Render()
 				else if(m_MenuPage == PAGE_DEMOS)
 					RenderDemoList();
 				else if(m_MenuPage == PAGE_SETTINGS)
-					RenderSettings(MainView);
+					RenderSettings();
 			}
 		}
 
@@ -2110,7 +2110,7 @@ int CMenus::Render()
 		}
 		else if(m_Popup == POPUP_LANGUAGE)
 		{
-			RenderLanguageSelection(Box, false);
+			RenderLanguageSelection(false);
 
 			static CButtonContainer s_ButtonLanguage;
 			if(DoButton_Menu(&s_ButtonLanguage, pButtonText, 0, &BottomBar) || m_EscapePressed || m_EnterPressed)

@@ -55,7 +55,6 @@ private:
 	int DoButton_MenuTab(const void *pID, const char *pText, int Checked, const CUIRect *pRect, int Corners);
 	int DoButton_MenuTabTop(CButtonContainer *pBC, const char *pText, int Checked, const CUIRect *pRect, float Alpha=1.0f, float FontAlpha=1.0f, int Corners=CUI::CORNER_ALL, float r=5.0f, float FontFactor=0.0f);
 	void DoButton_MenuTabTop_Dummy(const char *pText, int Checked, const CUIRect *pRect, float Alpha);
-	int DoButton_Customize(CButtonContainer *pBC, IGraphics::CTextureHandle Texture, int SpriteID, const CUIRect *pRect, float ImageRatio);
 
 	int DoButton_CheckBox_Common(const void *pID, const char *pText, const char *pBoxText, const CUIRect *pRect, bool Checked=false, bool Locked=false);
 	int DoButton_CheckBox(const void *pID, const char *pText, int Checked, const CUIRect *pRect, bool Locked=false);
@@ -661,33 +660,30 @@ private:
 	void UpdateFriends();
 
 	// found in menus_settings.cpp
-	void RenderLanguageSelection(CUIRect MainView, bool Header=true);
-	void RenderThemeSelection(CUIRect MainView, bool Header=true);
-	void RenderHSLPicker(CUIRect Picker);
-	void RenderSkinSelection(CUIRect MainView);
-	void RenderSkinPartSelection(CUIRect MainView);
-	void RenderSettingsGeneral(CUIRect MainView);
-	void RenderSettingsPlayer(CUIRect MainView);
-	void RenderSettingsTee(CUIRect MainView);
-	void RenderSettingsTeeBasic(CUIRect MainView);
-	void RenderSettingsTeeCustom(CUIRect MainView);
-	void RenderSettingsControls(CUIRect MainView);
-	void RenderSettingsGraphics(CUIRect MainView);
-	void RenderSettingsSound(CUIRect MainView);
+	void RenderLanguageSelection(bool Header=true);
+	void RenderThemeSelection(bool Header=true);
+	void RenderSkinPartSelection();
+	void RenderSettingsPlayer();
+	void RenderSettingsTee();
+	void RenderSettingsTeeBasic();
+	void RenderSettingsTeeCustom();
+	void RenderSettingsControls();
+	void RenderSettingsGraphics();
+	void RenderSettingsSound();
 	void RenderSettingsStats(CUIRect MainView);
-	void RenderSettings(CUIRect MainView);
+	void RenderSettings();
 
-	bool DoResolutionList(CUIRect* pRect, CListBoxState* pListBoxState,
+	bool DoResolutionList(CListBoxState* pListBoxState,
 						  const sorted_array<CVideoMode>& lModes);
 
 	// found in menu_callback.cpp
-	static float RenderSettingsControlsMovement(CUIRect View, void *pUser);
-	static float RenderSettingsControlsWeapon(CUIRect View, void *pUser);
-	static float RenderSettingsControlsVoting(CUIRect View, void *pUser);
-	static float RenderSettingsControlsChat(CUIRect View, void *pUser);
-	static float RenderSettingsControlsScoreboard(CUIRect View, void *pUser);
-	static float RenderSettingsControlsStats(CUIRect View, void *pUser);
-	static float RenderSettingsControlsMisc(CUIRect View, void *pUser);
+	static float RenderSettingsControlsMovement(void *pUser);
+	static float RenderSettingsControlsWeapon(void *pUser);
+	static float RenderSettingsControlsVoting(void *pUser);
+	static float RenderSettingsControlsChat(void *pUser);
+	static float RenderSettingsControlsScoreboard(void *pUser);
+	static float RenderSettingsControlsStats(void *pUser);
+	static float RenderSettingsControlsMisc(void *pUser);
 
 	void SetActive(bool Active);
 
