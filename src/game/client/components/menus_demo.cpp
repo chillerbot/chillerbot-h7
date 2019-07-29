@@ -16,6 +16,7 @@
 #include "menus.h"
 
 void CMenus::RenderDemoPlayer()
+
 {
 	const IDemoPlayer::CInfo *pInfo = DemoPlayer()->BaseInfo();
 
@@ -169,7 +170,7 @@ void CMenus::RenderDemoList()
 		}
 	}
 
-  dbg_msg("demos", "%s %d", Localize("Recorded"), m_lDemos.size());
+	dbg_msg("demos", "%s %d", Localize("Recorded"), m_lDemos.size());
 	for(sorted_array<CDemoItem>::range r = m_lDemos.all(); !r.empty(); r.pop_front())
 	{
 		// marker count
@@ -178,28 +179,30 @@ void CMenus::RenderDemoList()
 		if(DemoItem.m_Valid && DemoItem.m_InfosLoaded)
 			DemoMarkerCount = DemoGetMarkerCount(DemoItem.m_Info);
 
-    if(!DemoItem.m_IsDir)
-    {
-      // if(DemoItem.m_Valid && DemoItem.m_InfosLoaded)
-        // IconColor = DemoMarkerCount > 0 ? vec4(0.5, 1, 0.5, 1) : vec4(1,1,1,1);
-    }
+		if(!DemoItem.m_IsDir)
+		{
+			// if(DemoItem.m_Valid && DemoItem.m_InfosLoaded)
+				// IconColor = DemoMarkerCount > 0 ? vec4(0.5, 1, 0.5, 1) : vec4(1,1,1,1);
+		}
 
-    if((&r.front() - m_lDemos.base_ptr()) == m_DemolistSelectedIndex) // selected
-    {
-      dbg_msg("demos", "[%s]", r.front().m_aName);
-    }
-    else
-    {
-      dbg_msg("demos", " %s ", r.front().m_aName);
-    }
+		if((&r.front() - m_lDemos.base_ptr()) == m_DemolistSelectedIndex) // selected
+		{
+			dbg_msg("demos", "[%s] marker=%d", r.front().m_aName, DemoMarkerCount);
+		}
+		else
+		{
+			dbg_msg("demos", " %s marker=%d", r.front().m_aName, DemoMarkerCount);
+		}
 	}
 	DemolistOnUpdate(false);
 
 	if(!m_DemolistSelectedIsDir && m_DemolistSelectedIndex >= 0 && m_lDemos[m_DemolistSelectedIndex].m_Valid)
-    RenderDemoDetails(this);
+	{
+		RenderDemoDetails(this);
+	}
 	else
 	{
-    dbg_msg("demos", "%s", aFooterLabel);
+		dbg_msg("demos", "%s", aFooterLabel);
 	}
 
 	// demo buttons
