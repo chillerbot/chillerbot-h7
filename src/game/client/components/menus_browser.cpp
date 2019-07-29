@@ -437,21 +437,8 @@ int CMenus::GameIconScan(const char *pName, int IsDir, int DirType, void *pUser)
 	// add new game icon
 	char aBuf[512];
 	str_format(aBuf, sizeof(aBuf), "ui/gametypes/%s", pName);
-	CImageInfo Info;
-	if(!pSelf->Graphics()->LoadPNG(&Info, aBuf, DirType) || Info.m_Width != CGameIcon::GAMEICON_SIZE || (Info.m_Height != CGameIcon::GAMEICON_SIZE && Info.m_Height != CGameIcon::GAMEICON_OLDHEIGHT))
-	{
-		str_format(aBuf, sizeof(aBuf), "failed to load gametype icon '%s'", aGameIconName);
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "game", aBuf);
-		return 0;
-	}
-	CGameIcon GameIcon(aGameIconName);
-	str_format(aBuf, sizeof(aBuf), "loaded gametype icon '%s'", aGameIconName);
+	str_format(aBuf, sizeof(aBuf), "skipping load of gametype icon '%s'", aGameIconName);
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "game", aBuf);
-
-	GameIcon.m_IconTexture = pSelf->Graphics()->LoadTextureRaw(CGameIcon::GAMEICON_SIZE, CGameIcon::GAMEICON_SIZE, Info.m_Format, Info.m_pData, Info.m_Format, IGraphics::TEXLOAD_LINEARMIPMAPS);
-	pSelf->m_lGameIcons.add(GameIcon);
-	if(!str_comp_nocase(aGameIconName, "mod"))
-		pSelf->m_GameIconDefault = GameIcon.m_IconTexture;
 	return 0;
 }
 
