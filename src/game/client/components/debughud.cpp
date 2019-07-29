@@ -9,7 +9,6 @@
 
 #include <game/client/gameclient.h>
 #include <game/client/animstate.h>
-#include <game/client/render.h>
 
 #include "debughud.h"
 

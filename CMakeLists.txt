@@ -1379,7 +1379,6 @@ if(CLIENT)
     localization.h
     render.cpp
     render.h
-    render_map.cpp
     ui.cpp
     ui.h
   )

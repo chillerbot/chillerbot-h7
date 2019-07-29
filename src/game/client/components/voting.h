@@ -7,7 +7,6 @@
 
 #include <game/voting.h>
 #include <game/client/component.h>
-#include <game/client/ui.h>
 
 class CVoting : public CComponent
 {
