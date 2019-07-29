@@ -65,7 +65,6 @@ void CMapLayers::LoadBackgroundMap()
 	Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "client", aBuf);
 
 	m_pMenuLayers->Init(Kernel(), m_pMenuMap);
-	RenderTools()->RenderTilemapGenerateSkip(m_pMenuLayers);
 	m_pClient->m_pMapimages->OnMenuMapLoad(m_pMenuMap);
 	LoadEnvPoints(m_pMenuLayers, m_lEnvPointsMenu);
 }
