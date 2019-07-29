@@ -57,34 +57,9 @@ static CKeyInfo gs_aKeys[] =
 	Localize("Screenshot");Localize("Scoreboard");Localize("Statboard");Localize("Respawn");Localize("Ready");Localize("Add demo marker");
 */
 
-void CMenus::UiDoGetButtons(int Start, int Stop, CUIRect View, float ButtonHeight, float Spaceing)
+void CMenus::UiDoGetButtons(int Start, int Stop, float ButtonHeight, float Spaceing)
 {
-	for (int i = Start; i < Stop; i++)
-	{
-		View.HSplitTop(Spaceing, 0, &View);
 
-		CKeyInfo &Key = gs_aKeys[i];
-		CUIRect Button, Label;
-		View.HSplitTop(ButtonHeight, &Button, &View);
-		RenderTools()->DrawUIRect(&Button, vec4(0.0f, 0.0f, 0.0f, 0.25f), CUI::CORNER_ALL, 5.0f);
-
-		Button.VSplitMid(&Label, &Button);
-
-		char aBuf[64];
-		str_format(aBuf, sizeof(aBuf), "%s:", (const char *)Key.m_Name);
-
-		Label.y += 2.0f;
-		UI()->DoLabel(&Label, aBuf, 13.0f, CUI::ALIGN_CENTER);
-		int OldId = Key.m_KeyId, OldModifier = Key.m_Modifier, NewModifier;
-		int NewId = DoKeyReader(&gs_aKeys[i].m_BC, &Button, OldId, OldModifier, &NewModifier);
-		if(NewId != OldId || NewModifier != OldModifier)
-		{
-			if(OldId != 0 || NewId == 0)
-				m_pClient->m_pBinds->Bind(OldId, OldModifier, "");
-			if(NewId != 0)
-				m_pClient->m_pBinds->Bind(NewId, NewModifier, gs_aKeys[i].m_pCommand);
-		}
-	}
 }
 
 float CMenus::RenderSettingsControlsMovement(void *pUser)
