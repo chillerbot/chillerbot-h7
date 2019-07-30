@@ -383,10 +383,6 @@ elseif(TARGET_OS STREQUAL "mac")
   find_library(CARBON Carbon)
   find_library(COCOA Cocoa)
   find_library(OPENGL OpenGL)
-  set(PLATFORM_CLIENT
-    src/osxlaunch/client.h
-    src/osxlaunch/client.m
-  )
   set(PLATFORM_CLIENT_LIBS ${COCOA} ${OPENGL})
   set(PLATFORM_LIBS ${CARBON})
 else()

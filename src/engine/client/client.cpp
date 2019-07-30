@@ -47,7 +47,6 @@
 	#include <windows.h>
 #endif
 
-#include "SDL.h"
 #ifdef main
 #undef main
 #endif
@@ -1772,17 +1771,6 @@ void CClient::Run()
 	m_LocalStartTime = time_get();
 	m_SnapshotParts = 0;
 
-	// init SDL
-	{
-		if(SDL_Init(0) < 0)
-		{
-			dbg_msg("client", "unable to init SDL base: %s", SDL_GetError());
-			return;
-		}
-
-		atexit(SDL_Quit); // ignore_convention
-	}
-
 	m_MenuStartTime = time_get();
 
 	// init sound, allowed to fail
@@ -1860,10 +1848,6 @@ void CClient::Run()
 			Connect(m_aCmdConnect);
 			m_aCmdConnect[0] = 0;
 		}
-
-		// update input
-		if(Input()->Update())
-			break;	// SDL_QUIT
 
 		// update sound
 		Sound()->Update();
@@ -1987,11 +1971,6 @@ void CClient::Run()
 	m_pSound->Shutdown();
 
 	m_ServerBrowser.SaveServerlist();
-
-	// shutdown SDL
-	{
-		SDL_Quit();
-	}
 }
 
 int64 CClient::TickStartTime(int Tick)
@@ -2309,14 +2288,8 @@ void CClient::ConnectOnStart(const char *pAddress)
 	Prediction Latency
 		Upstream latency
 */
-#if defined(CONF_PLATFORM_MACOSX)
-extern "C" int SDL_main(int argc, char **argv_) // ignore_convention
-{
-	const char **argv = const_cast<const char **>(argv_);
-#else
 int main(int argc, const char **argv) // ignore_convention
 {
-#endif
 #if defined(CONF_FAMILY_WINDOWS)
 	bool QuickEditMode = false;
 	for(int i = 1; i < argc; i++) // ignore_convention
