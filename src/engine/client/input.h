@@ -6,7 +6,6 @@
 class CInput : public IEngineInput
 {
 	IConsole *m_pConsole;
-	SDL_Joystick *m_pJoystick;
 
 	int m_InputGrabbed;
 	char *m_pClipboardText;
