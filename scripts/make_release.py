@@ -130,8 +130,6 @@ if include_data and not use_bundle:
 	copy_tree(maps_dir, package_dir+"/data/maps")
 	if platform[:3] == "win":
 		shutil.copy("other/config_directory.bat", package_dir)
-		shutil.copy(source_package_dir+"SDL2.dll", package_dir)
-		shutil.copy(source_package_dir+"freetype.dll", package_dir)
 
 if include_exe and not use_bundle:
 	shutil.copy(source_package_dir+name+exe_ext, package_dir)
@@ -162,7 +160,6 @@ if use_bundle:
 	clientbundle_resource_dir = os.path.join(clientbundle_content_dir, "Resources")
 	clientbundle_framework_dir = os.path.join(clientbundle_content_dir, "Frameworks")
 	binary_path = clientbundle_bin_dir + "/" + name+exe_ext
-	freetypelib_path = clientbundle_framework_dir + "/libfreetype.6.dylib"
 	os.mkdir(os.path.join(package_dir, "Teeworlds.app"))
 	os.mkdir(clientbundle_content_dir)
 	os.mkdir(clientbundle_bin_dir)
@@ -173,12 +170,7 @@ if use_bundle:
 	copy_tree(maps_dir, clientbundle_resource_dir+"/data/maps")
 	shutil.copy("other/icons/Teeworlds.icns", clientbundle_resource_dir)
 	shutil.copy(source_package_dir+name+exe_ext, clientbundle_bin_dir)
-	os.system("install_name_tool -change /usr/local/opt/freetype/lib/libfreetype.6.dylib @executable_path/../Frameworks/libfreetype.6.dylib " + binary_path)
-	os.system("install_name_tool -change /usr/local/opt/sdl2/lib/libSDL2-2.0.0.dylib @executable_path/../Frameworks/libSDL2-2.0.0.dylib  " + binary_path)
-	os.system("cp /usr/local/opt/freetype/lib/libfreetype.6.dylib " + clientbundle_framework_dir)
 	os.system("cp /usr/local/opt/libpng/lib/libpng16.16.dylib " + clientbundle_framework_dir)
-	os.system("cp /usr/local/opt/sdl2/lib/libSDL2-2.0.0.dylib " + clientbundle_framework_dir)
-	os.system("install_name_tool -change /usr/local/opt/libpng/lib/libpng16.16.dylib @executable_path/../Frameworks/libpng16.16.dylib " + freetypelib_path)
 	file(os.path.join(clientbundle_content_dir, "Info.plist"), "w").write("""
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
