@@ -161,7 +161,6 @@ function GenerateMacOSXSettings(settings, conf, arch, compiler)
 	settings.link.frameworks:Add("AGL")
 	-- FIXME: the SDL config is applied in BuildClient too but is needed here before so the launcher will compile
 	config.sdl:Apply(settings)
-	settings.link.extrafiles:Merge(Compile(settings, "src/osxlaunch/client.m"))
 	BuildClient(settings)
 
 	-- Content
@@ -514,7 +513,7 @@ end
 
 targets = {client="teeworlds", server="teeworlds_srv",
            versionserver="versionsrv", masterserver="mastersrv",
-           tools="pseudo_tools", content="content"}
+           tools="pseudo_tools"}
 
 subtargets = {}
 for t, cur_target in pairs(targets) do
@@ -535,5 +534,5 @@ for cur_name, cur_target in pairs(targets) do
 	PseudoTarget(cur_name, subtargets[cur_target])
 end
 
-PseudoTarget("game", "client", "server", "content")
+PseudoTarget("game", "client", "server")
 DefaultTarget("game")
