@@ -88,7 +88,7 @@ set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
 )
 
 set(SERVER_EXECUTABLE teeworlds_srv CACHE STRING "Name of the built server executable")
-set(CLIENT_EXECUTABLE teeworlds CACHE STRING "Name of the build client executable")
+set(CLIENT_EXECUTABLE chillerbot-h7 CACHE STRING "Name of the build client executable")
 
 ########################################################################
 # Download dependencies
@@ -302,7 +302,7 @@ if(TARGET_OS AND TARGET_OS STREQUAL "mac")
   find_program(HDIUTIL hdiutil)
 endif()
 
-message(STATUS "******** Teeworlds ********")
+message(STATUS "******** Teeworlds (chillerbot-h7) ********")
 message(STATUS "Target OS: ${TARGET_OS} ${TARGET_BITS}bit")
 message(STATUS "Compiler: ${CMAKE_CXX_COMPILER}")
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
@@ -1372,9 +1372,9 @@ if(CLIENT)
   if(TARGET_OS STREQUAL "windows")
     set(CLIENT_ICON "other/icons/${CLIENT_EXECUTABLE}.rc")
     if(NOT MINGW)
-      set(CLIENT_MANIFEST "other/manifest/teeworlds.manifest")
+      set(CLIENT_MANIFEST "other/manifest/chillerbot-h7.manifest")
     else()
-      set(CLIENT_MANIFEST "other/manifest/teeworlds.rc")
+      set(CLIENT_MANIFEST "other/manifest/chillerbot-h7.rc")
     endif()
   else()
     set(CLIENT_ICON)

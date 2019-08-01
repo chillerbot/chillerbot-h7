@@ -313,7 +313,7 @@ shared_icons = {}
 function SharedIcons(compiler)
 	if not shared_icons[compiler] then
 		local server_icon = ResCompile("other/icons/teeworlds_srv_" .. compiler .. ".rc", compiler)
-		local client_icon = ResCompile("other/icons/teeworlds_" .. compiler .. ".rc", compiler)
+		local client_icon = ResCompile("other/icons/chillerbot-h7_" .. compiler .. ".rc", compiler)
 		shared_icons[compiler] = {server=server_icon, client=client_icon}
 	end
 	return shared_icons[compiler]
@@ -321,7 +321,7 @@ end
 
 function SharedManifests(compiler)
 	if not shared_manifests then
-		local client_manifest = ResCompile("other/manifest/teeworlds.rc", compiler)
+		local client_manifest = ResCompile("other/manifest/chillerbot-h7.rc", compiler)
 		shared_manifests = {client=client_manifest}
 	end
 	return shared_manifests
@@ -342,7 +342,7 @@ function BuildClient(settings, family, platform)
 	local game_client = Compile(settings, CollectRecursive("src/game/client/*.cpp"), SharedClientFiles())
 	local game_editor = Compile(settings, Collect("src/game/editor/*.cpp"))
 	
-	Link(settings, "teeworlds", libs["zlib"], libs["md5"], libs["wavpack"], libs["png"], libs["json"], client, game_client, game_editor)
+	Link(settings, "chillerbot-h7", libs["zlib"], libs["md5"], libs["wavpack"], libs["png"], libs["json"], client, game_client, game_editor)
 end
 
 function BuildServer(settings, family, platform)
@@ -496,7 +496,7 @@ if ScriptArgs['builddir'] then
 	builddir = ScriptArgs['builddir']
 end
 
-targets = {client="teeworlds", server="teeworlds_srv",
+targets = {client="chillerbot-h7", server="teeworlds_srv",
            versionserver="versionsrv", masterserver="mastersrv",
            tools="pseudo_tools"}
 
