@@ -1,8 +1,6 @@
 CheckVersion("0.5")
 
 Import("configure.lua")
-Import("other/sdl/sdl.lua")
-Import("other/freetype/freetype.lua")
 
 --- Setup Config -------
 config = NewConfig()
@@ -11,8 +9,6 @@ config:Add(OptTestCompileC("stackprotector", "int main(){return 0;}", "-fstack-p
 config:Add(OptTestCompileC("minmacosxsdk", "int main(){return 0;}", "-mmacosx-version-min=10.7 -isysroot /Developer/SDKs/MacOSX10.7.sdk"))
 config:Add(OptTestCompileC("buildwithoutsseflag", "#include <immintrin.h>\nint main(){_mm_pause();return 0;}", ""))
 config:Add(OptLibrary("zlib", "zlib.h", false))
-config:Add(SDL.OptFind("sdl", true))
-config:Add(FreeType.OptFind("freetype", true))
 config:Finalize("config.lua")
 
 generated_src_dir = "build/src"
@@ -159,8 +155,6 @@ function GenerateMacOSXSettings(settings, conf, arch, compiler)
 	-- Client
 	settings.link.frameworks:Add("OpenGL")
 	settings.link.frameworks:Add("AGL")
-	-- FIXME: the SDL config is applied in BuildClient too but is needed here before so the launcher will compile
-	config.sdl:Apply(settings)
 	BuildClient(settings)
 
 	-- Content
@@ -343,9 +337,6 @@ end
 
 
 function BuildClient(settings, family, platform)
-	config.sdl:Apply(settings)
-	config.freetype:Apply(settings)
-	
 	local client = Compile(settings, Collect("src/engine/client/*.cpp"))
 	
 	local game_client = Compile(settings, CollectRecursive("src/game/client/*.cpp"), SharedClientFiles())
@@ -390,12 +381,6 @@ function BuildContent(settings, arch, conf)
 		end
 		-- dependencies
 		dl = Python("scripts/download.py")
-		AddJob("other/sdl/include/SDL.h", "Downloading SDL2", dl .. " sdl")
-		AddJob("other/freetype/include/ft2build.h", "Downloading freetype", dl .. " freetype")
-		table.insert(content, CopyFile(settings.link.Output(settings, "") .. "/SDL2.dll", "other/sdl/windows/lib" .. _arch .. "/SDL2.dll"))
-		table.insert(content, CopyFile(settings.link.Output(settings, "") .. "/freetype.dll", "other/freetype/windows/lib" .. _arch .. "/freetype.dll"))
-		AddDependency(settings.link.Output(settings, "") .. "/SDL2.dll", "other/sdl/include/SDL.h")
-		AddDependency(settings.link.Output(settings, "") .. "/freetype.dll", "other/freetype/include/ft2build.h")
 	end
 	PseudoTarget(settings.link.Output(settings, "content") .. settings.link.extension, content)
 end

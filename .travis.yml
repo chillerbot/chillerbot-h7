@@ -1,6 +1,5 @@
 os: osx
 script:
-- brew install sdl2
 - mkdir build; cd build
 - cmake -Werror=dev -DDOWNLOAD_GTEST=ON ..
 - make everything

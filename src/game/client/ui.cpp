@@ -3,8 +3,6 @@
 #include <base/system.h>
 
 #include <engine/shared/config.h>
-#include <engine/graphics.h>
-#include <engine/textrender.h>
 #include "ui.h"
 
 /********************************************************
@@ -286,30 +284,6 @@ int CUI::DoButtonLogic(const void *pID, const char *pText, int Checked, const CU
 
 int CUI::DoPickerLogic(const void *pID, const CUIRect *pRect, float *pX, float *pY)
 {
-	int Inside = MouseInside(pRect);
-
-	if(CheckActiveItem(pID))
-	{
-		if(!MouseButton(0))
-			SetActiveItem(0);
-	}
-	else if(HotItem() == pID)
-	{
-		if(MouseButton(0))
-			SetActiveItem(pID);
-	}
-
-	if(Inside)
-		SetHotItem(pID);
-
-	if(!CheckActiveItem(pID))
-		return 0;
-
-	if(pX)
-		*pX = clamp(m_MouseX - pRect->x, 0.0f, pRect->w);
-	if(pY)
-		*pY = clamp(m_MouseY - pRect->y, 0.0f, pRect->h);
-
 	return 1;
 }
 

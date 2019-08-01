@@ -13,11 +13,7 @@ __pycache__/
 *.pyc
 *.pyo
 scripts/work/
-/SDL.dll
-/freetype.dll
 /autoexec.cfg
-other/freetype
-other/sdl
 Info.plist
 
 crapnet*
