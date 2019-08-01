@@ -49,9 +49,6 @@ static int m_CenterY = 0;
 
 static float m_MaxDistance = 1500.0f;
 
-static volatile int m_SoundVolume = 100;
-
-
 int CSound::Init()
 {
 	return 0;
